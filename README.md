@@ -1,4 +1,4 @@
-Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/go-gdax)
+Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/gdax)
 ========
 
 ## Warning
@@ -19,7 +19,7 @@ go get github.com/randy/go-gdax
 ```
 
 ## Documentation
-For full details on functionality, see [GoDoc](http://godoc.org/github.com/randy/go-gdax) documentation.
+For full details on functionality, see [GoDoc](http://godoc.org/github.com/randy/gdax) documentation.
 
 ### Example
 How to create a client and make a request:
@@ -108,7 +108,6 @@ Results return coinbase time type which handles different types of time parsing 
 ```go
   import(
     "time"
-    gdax "github.com/preichenberger/go-gdax"
   )
 
   coinbaseTime := gdax.Time{}
