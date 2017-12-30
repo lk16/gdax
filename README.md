@@ -1,9 +1,6 @@
 Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/gdax) [![Build Status](https://travis-ci.org/randyp/gdax.svg?branch=master)](https://travis-ci.org/randyp/gdax) [![Go Report Card](https://goreportcard.com/badge/github.com/randyp/gdax)](https://goreportcard.com/report/github.com/randyp/gdax)
 ========
 
-## Warning
-Actually requires [my fork of shopspring/decmial](https://github.com/randyp/decimal) at the moment since I don't expect anyone else to be using this library.
-
 ## Summary
 
 Go client library for [GDAX](https://www.gdax.com) restful endpoints and websocket feed. A heavily modified fork github.com/preichenberger/go-gdax so that we could:
