@@ -1,4 +1,4 @@
-Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/gdax) [![Build Status](https://travis-ci.org/randyp/gdax.svg?branch=master)](https://travis-ci.org/randyp/gdax)
+Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/gdax) [![Build Status](https://travis-ci.org/randyp/gdax.svg?branch=master)](https://travis-ci.org/randyp/gdax) [![Go Report Card](https://goreportcard.com/badge/github.com/randyp/gdax)](https://goreportcard.com/report/github.com/randyp/gdax)
 ========
 
 ## Warning
