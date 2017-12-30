@@ -1,60 +1,51 @@
-Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/preichenberger/go-gdax) [![Build Status](https://travis-ci.org/preichenberger/go-gdax.svg?branch=master)](https://travis-ci.org/preichenberger/go-gdax)
+Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://godoc.org/github.com/randyp/go-gdax)
 ========
+
+## Warning
+Actually requires [my fork of shopspring/decmial](https://github.com/randyp/decimal) at the moment since I don't expect anyone else to be using this library.
 
 ## Summary
 
-Go client for [GDAX](https://www.gdax.com)
+Go client library for [GDAX](https://www.gdax.com) restful endpoints and websocket feed. A heavily modified fork github.com/preichenberger/go-gdax so that we could:
+* support rate limiting
+* support public-endpoint-only clients
+* use shopspring decimals, since floats will occasionally not work
+* adhere to go coding hygenic standards
 
 ## Installation
 
 ```sh
-go get github.com/preichenberger/go-gdax
+go get github.com/randy/go-gdax
 ```
 
 ## Documentation
-For full details on functionality, see [GoDoc](http://godoc.org/github.com/preichenberger/go-gdax) documentation.
+For full details on functionality, see [GoDoc](http://godoc.org/github.com/randy/go-gdax) documentation.
 
-### Setup
-How to create a client:
+### Example
+How to create a client and make a request:
 
 ```go
-
 import (
+  "context.Context"
+  "github.com/randy/gdax"
   "os"
-  gdax "github.com/preichenberger/go-gdax"
 )
 
 secret := os.Getenv("COINBASE_SECRET")
 key := os.Getenv("COINBASE_KEY")
 passphrase := os.Getenv("COINBASE_PASSPHRASE")
 
-// or unsafe hardcode way
-secret = "exposedsecret"
-key = "exposedkey"
-passphrase = "exposedpassphrase"
-
 client := gdax.NewClient(secret, key, passphrase)
-```
-
-### HTTP Settings
-```go
-import (
-  "net/http"
-  "time"
-)
-
-client.HttpClient = &http.Client {
-  Timeout: 15 * time.Second,
-}
+accounts := gdax.GetAccounts(context.Background())
 ```
 
 ### Cursor
 This library uses a cursor pattern so you don't have to keep track of pagination.
 
 ```go
-var orders []gdax.Order
-cursor = client.ListOrders()
+cursor := client.ListOrders(context.Background())
 
+var orders []gdax.Order
 for cursor.HasMore {
   if err := cursor.NextPage(&orders); err != nil {
     println(err.Error())
@@ -206,12 +197,4 @@ Get Trade history:
 ```
 
 ### Testing
-To test with Coinbase's public sandbox set the following environment variables:
-  - TEST_COINBASE_SECRET
-  - TEST_COINBASE_KEY
-  - TEST_COINBASE_PASSPHRASE
-
-Then run `go test`
-```sh
-TEST_COINBASE_SECRET=secret TEST_COINBASE_KEY=key TEST_COINBASE_PASSPHRASE=passphrase go test
-```
+Coinbase's sandbox is down. I do not recommend trying to test against their production api. 
