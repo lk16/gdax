@@ -2,7 +2,6 @@ package gdax
 
 import (
 	"context"
-	"github.com/shopspring/decimal"
 	"os"
 	"testing"
 )
