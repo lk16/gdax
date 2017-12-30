@@ -1,26 +1,29 @@
 package gdax
 
 import (
+	"context"
 	"fmt"
 )
 
 type Cursor struct {
+	ctx        context.Context
 	Client     *Client
 	Pagination *PaginationParams
 	Method     string
 	Params     interface{}
 	URL        string
 	HasMore    bool
+	private    bool
 }
 
-func NewCursor(client *Client, method, url string,
-	paginationParams *PaginationParams) *Cursor {
+func NewCursor(ctx context.Context, client *Client, private bool, method, url string, paginationParams *PaginationParams) *Cursor {
 	return &Cursor{
 		Client:     client,
 		Method:     method,
 		URL:        url,
 		Pagination: paginationParams,
 		HasMore:    true,
+		private:    private,
 	}
 }
 
@@ -30,7 +33,7 @@ func (c *Cursor) Page(i interface{}, direction string) error {
 		url = fmt.Sprintf("%s?%s", c.URL, c.Pagination.Encode(direction))
 	}
 
-	res, err := c.Client.Request(c.Method, url, c.Params, i)
+	res, err := c.Client.request(c.ctx, c.private, c.Method, url, c.Params, i)
 	if err != nil {
 		c.HasMore = false
 		return err

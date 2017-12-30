@@ -1,32 +1,34 @@
 package gdax
 
 import (
+	"context"
 	"fmt"
+	"github.com/shopspring/decimal"
 )
 
 type Order struct {
-	Type      string  `json:"type"`
-	Size      float64 `json:"size,string,omitempty"`
-	Side      string  `json:"side"`
-	ProductId string  `json:"product_id"`
-	ClientOID string  `json:"client_oid,omitempty"`
-	Stp       string  `json:"stp,omitempty"`
+	Type      string          `json:"type"`
+	Size      decimal.Decimal `json:"size,string,omitempty"`
+	Side      string          `json:"side"`
+	ProductId string          `json:"product_id"`
+	ClientOID string          `json:"client_oid,omitempty"`
+	Stp       string          `json:"stp,omitempty"`
 	// Limit Order
-	Price       float64 `json:"price,string,omitempty"`
-	TimeInForce string  `json:"time_in_force,omitempty"`
-	PostOnly    bool    `json:"post_only,omitempty"`
-	CancelAfter string  `json:"cancel_after,omitempty"`
+	Price       decimal.Decimal `json:"price,string,omitempty"`
+	TimeInForce string          `json:"time_in_force,omitempty"`
+	PostOnly    bool            `json:"post_only,omitempty"`
+	CancelAfter string          `json:"cancel_after,omitempty"`
 	// Market Order
-	Funds float64 `json:"funds,string,omitempty"`
+	Funds decimal.Decimal `json:"funds,string,omitempty"`
 	// Response Fields
-	Id            string  `json:"id"`
-	Status        string  `json:"status,omitempty"`
-	Settled       bool    `json:"settled,omitempty"`
-	DoneReason    string  `json:"done_reason,omitempty"`
-	CreatedAt     Time    `json:"created_at,string,omitempty"`
-	FillFees      float64 `json:"fill_fees,string,omitempty"`
-	FilledSize    float64 `json:"filled_size,string,omitempty"`
-	ExecutedValue float64 `json:"executed_value,string,omitempty"`
+	Id            string          `json:"id"`
+	Status        string          `json:"status,omitempty"`
+	Settled       bool            `json:"settled,omitempty"`
+	DoneReason    string          `json:"done_reason,omitempty"`
+	CreatedAt     Time            `json:"created_at,string,omitempty"`
+	FillFees      decimal.Decimal `json:"fill_fees,string,omitempty"`
+	FilledSize    decimal.Decimal `json:"filled_size,string,omitempty"`
+	ExecutedValue decimal.Decimal `json:"executed_value,string,omitempty"`
 }
 
 type CancelAllOrdersParams struct {
@@ -39,7 +41,7 @@ type ListOrdersParams struct {
 	Pagination PaginationParams
 }
 
-func (c *Client) CreateOrder(newOrder *Order) (Order, error) {
+func (c *Client) CreateOrder(ctx context.Context, newOrder *Order) (Order, error) {
 	var savedOrder Order
 
 	if len(newOrder.Type) == 0 {
@@ -47,17 +49,17 @@ func (c *Client) CreateOrder(newOrder *Order) (Order, error) {
 	}
 
 	url := fmt.Sprintf("/orders")
-	_, err := c.Request("POST", url, newOrder, &savedOrder)
+	_, err := c.request(ctx, true, "POST", url, newOrder, &savedOrder)
 	return savedOrder, err
 }
 
-func (c *Client) CancelOrder(id string) error {
+func (c *Client) CancelOrder(ctx context.Context, id string) error {
 	url := fmt.Sprintf("/orders/%s", id)
-	_, err := c.Request("DELETE", url, nil, nil)
+	_, err := c.request(ctx, true, "DELETE", url, nil, nil)
 	return err
 }
 
-func (c *Client) CancelAllOrders(p ...CancelAllOrdersParams) ([]string, error) {
+func (c *Client) CancelAllOrders(ctx context.Context, p ...CancelAllOrdersParams) ([]string, error) {
 	var orderIDs []string
 	url := "/orders"
 
@@ -65,19 +67,19 @@ func (c *Client) CancelAllOrders(p ...CancelAllOrdersParams) ([]string, error) {
 		url = fmt.Sprintf("%s?product_id=", p[0].ProductId)
 	}
 
-	_, err := c.Request("DELETE", url, nil, &orderIDs)
+	_, err := c.request(ctx, true, "DELETE", url, nil, &orderIDs)
 	return orderIDs, err
 }
 
-func (c *Client) GetOrder(id string) (Order, error) {
+func (c *Client) GetOrder(ctx context.Context, id string) (Order, error) {
 	var savedOrder Order
 
 	url := fmt.Sprintf("/orders/%s", id)
-	_, err := c.Request("GET", url, nil, &savedOrder)
+	_, err := c.request(ctx, true, "GET", url, nil, &savedOrder)
 	return savedOrder, err
 }
 
-func (c *Client) ListOrders(p ...ListOrdersParams) *Cursor {
+func (c *Client) ListOrders(ctx context.Context, p ...ListOrdersParams) *Cursor {
 	paginationParams := PaginationParams{}
 	if len(p) > 0 {
 		paginationParams = p[0].Pagination
@@ -89,6 +91,11 @@ func (c *Client) ListOrders(p ...ListOrdersParams) *Cursor {
 		}
 	}
 
-	return NewCursor(c, "GET", fmt.Sprintf("/orders"),
-		&paginationParams)
+	return NewCursor(ctx,
+		c,
+		true,
+		"GET",
+		fmt.Sprintf("/orders"),
+		&paginationParams,
+	)
 }

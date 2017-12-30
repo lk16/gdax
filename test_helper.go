@@ -4,28 +4,22 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"reflect"
 	"time"
 )
 
-func NewTestClient() *Client {
-	secret := os.Getenv("TEST_COINBASE_SECRET")
-	key := os.Getenv("TEST_COINBASE_KEY")
-	passphrase := os.Getenv("TEST_COINBASE_PASSPHRASE")
+var sharedTestClient *Client
 
-	return &Client{
-		BaseURL:    "https://api-public.sandbox.gdax.com",
-		Secret:     secret,
-		Key:        key,
-		Passphrase: passphrase,
-		HttpClient: &http.Client{
+func testClient() *Client {
+	if sharedTestClient == nil {
+		sharedTestClient = NewPublicClient(&http.Client{
 			Timeout: 15 * time.Second,
-		},
+		})
 	}
+	return sharedTestClient
 }
 
-func StructHasZeroValues(i interface{}) bool {
+func structHasZeroValues(i interface{}) bool {
 	iv := reflect.ValueOf(i)
 
 	//values := make([]interface{}, v.NumField())
@@ -40,7 +34,7 @@ func StructHasZeroValues(i interface{}) bool {
 	return false
 }
 
-func CompareProperties(a, b interface{}, properties []string) (bool, error) {
+func compareProperties(a, b interface{}, properties []string) (bool, error) {
 	aValueOf := reflect.ValueOf(a)
 	bValueOf := reflect.ValueOf(b)
 

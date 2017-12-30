@@ -1,6 +1,7 @@
 package gdax
 
 import (
+	"context"
 	"fmt"
 	"strings"
 	"time"
@@ -8,14 +9,18 @@ import (
 
 type ServerTime struct {
 	ISO   string  `json:"iso"`
-	Epoch float64 `json:"epoch,number"`
+	Epoch float64 `json:"epoch,number"` // decimal seconds since Unix Epoch
 }
 
-func (c *Client) GetTime() (ServerTime, error) {
+// GetTime gets the API server time.
+//
+// Example:
+//
+func (c *Client) GetTime(ctx context.Context) (ServerTime, error) {
 	var serverTime ServerTime
 
 	url := fmt.Sprintf("/time")
-	_, err := c.Request("GET", url, nil, &serverTime)
+	_, err := c.request(ctx, false, "GET", url, nil, &serverTime)
 	return serverTime, err
 }
 

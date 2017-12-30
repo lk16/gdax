@@ -2,41 +2,35 @@ package gdax
 
 import (
 	"bytes"
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"golang.org/x/time/rate"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 )
 
 type Client struct {
-	BaseURL    string
-	Secret     string
-	Key        string
-	Passphrase string
-	HttpClient *http.Client
+	BaseURL        string
+	secret         string
+	key            string
+	passphrase     string
+	hasCredentials bool
+	privateLimiter *rate.Limiter
+	publicLimiter  *rate.Limiter
+	httpClient     *http.Client
 }
 
-func NewClient(secret, key, passphrase string) *Client {
-	client := Client{
-		BaseURL:    "https://api.gdax.com",
-		Secret:     secret,
-		Key:        key,
-		Passphrase: passphrase,
-		HttpClient: &http.Client{
-			Timeout: 15 * time.Second,
-		},
+func (c *Client) request(ctx context.Context, private bool, method string, url string, params, result interface{}) (res *http.Response, err error) {
+	if private && !c.hasCredentials {
+		return res, errors.New("cannot use a public client to make requests to the private api")
 	}
 
-	return &client
-}
-
-func (c *Client) Request(method string, url string,
-	params, result interface{}) (res *http.Response, err error) {
 	var data []byte
 	body := bytes.NewReader(make([]byte, 0))
 
@@ -55,28 +49,28 @@ func (c *Client) Request(method string, url string,
 		return res, err
 	}
 
-	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-
-	// XXX: Sandbox time is off right now
-	if os.Getenv("TEST_COINBASE_OFFSET") != "" {
-		inc, err := strconv.Atoi(os.Getenv("TEST_COINBASE_OFFSET"))
-		if err != nil {
-			return res, err
-		}
-
-		timestamp = strconv.FormatInt(time.Now().Unix()+int64(inc), 10)
-	}
-
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("User-Agent", "Baylatent Bot 2.0")
 
-	h, err := c.Headers(method, url, timestamp, string(data))
-	for k, v := range h {
-		req.Header.Add(k, v)
+	if c.hasCredentials {
+		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+		h, err := c.Headers(method, url, timestamp, string(data))
+		if err != nil {
+			return res, err
+		}
+		for k, v := range h {
+			req.Header.Add(k, v)
+		}
 	}
 
-	res, err = c.HttpClient.Do(req)
+	if private {
+		c.privateLimiter.Wait(ctx)
+	} else {
+		c.publicLimiter.Wait(ctx)
+	}
+
+	res, err = c.httpClient.Do(req)
 	if err != nil {
 		return res, err
 	}
@@ -106,8 +100,8 @@ func (c *Client) Request(method string, url string,
 // Headers generates a map that can be used as headers to authenticate a request
 func (c *Client) Headers(method, url, timestamp, data string) (map[string]string, error) {
 	h := make(map[string]string)
-	h["CB-ACCESS-KEY"] = c.Key
-	h["CB-ACCESS-PASSPHRASE"] = c.Passphrase
+	h["CB-ACCESS-KEY"] = c.key
+	h["CB-ACCESS-PASSPHRASE"] = c.passphrase
 	h["CB-ACCESS-TIMESTAMP"] = timestamp
 
 	message := fmt.Sprintf(
@@ -118,7 +112,7 @@ func (c *Client) Headers(method, url, timestamp, data string) (map[string]string
 		data,
 	)
 
-	sig, err := c.generateSig(message, c.Secret)
+	sig, err := c.generateSig(message, c.secret)
 	if err != nil {
 		return nil, err
 	}

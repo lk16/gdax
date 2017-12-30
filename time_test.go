@@ -1,21 +1,20 @@
 package gdax
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"testing"
 	"time"
 )
 
 func TestGetTime(t *testing.T) {
-	client := NewTestClient()
-	serverTime, err := client.GetTime()
+	serverTime, err := testClient().GetTime(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
-	if StructHasZeroValues(serverTime) {
-		t.Error(errors.New("Zero value"))
+	if structHasZeroValues(serverTime) {
+		t.Error("zero value")
 	}
 }
 
@@ -33,7 +32,7 @@ func TestTimeUnmarshalJSON(t *testing.T) {
 	}
 
 	if now.Equal(c.Time()) {
-		t.Error(errors.New("Unmarshaled time does not equal original time"))
+		t.Errorf("unmarshaled time (%s) does not equal original time (%s)", now, c.Time())
 	}
 }
 
@@ -57,6 +56,6 @@ func TestTimeMarshalJSON(t *testing.T) {
 	}
 
 	if string(jsonData) != expected {
-		t.Error(errors.New("Marshaled time (" + string(jsonData) + ") does not equal original time (" + expected + ")"))
+		t.Errorf("marshaled time (%s) does not equal original time (%s)", string(jsonData), expected)
 	}
 }

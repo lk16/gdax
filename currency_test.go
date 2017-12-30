@@ -1,20 +1,20 @@
 package gdax
 
 import (
-	"errors"
+	"context"
 	"testing"
 )
 
 func TestGetCurrencies(t *testing.T) {
-	client := NewTestClient()
-	currencies, err := client.GetCurrencies()
+	client := testClient()
+	currencies, err := client.GetCurrencies(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, c := range currencies {
-		if StructHasZeroValues(c) {
-			t.Error(errors.New("Zero value"))
+		if structHasZeroValues(c) {
+			t.Error("zero value")
 		}
 	}
 }

@@ -1,54 +1,69 @@
 package gdax
 
 import (
-	"errors"
+	"context"
 	"testing"
 )
 
 func TestGetAccounts(t *testing.T) {
-	client := NewTestClient()
-	accounts, err := client.GetAccounts()
+	client := testClient()
+	if !client.hasCredentials {
+		t.Skip("credentials are required to test")
+		return
+	}
+
+	accounts, err := client.GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	// Check for decoding issues
 	for _, a := range accounts {
-		if StructHasZeroValues(a) {
-			t.Error(errors.New("Zero value"))
+		if structHasZeroValues(a) {
+			t.Error("zero value")
 		}
 	}
 }
 
 func TestGetAccount(t *testing.T) {
-	client := NewTestClient()
-	accounts, err := client.GetAccounts()
+	client := testClient()
+	if !client.hasCredentials {
+		t.Skip("credentials are required to test")
+		return
+	}
+
+	accounts, err := client.GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		account, err := client.GetAccount(a.Id)
+		account, err := client.GetAccount(context.Background(), a.Id)
 		if err != nil {
 			t.Error(err)
 		}
 
 		// Check for decoding issues
-		if StructHasZeroValues(account) {
-			t.Error(errors.New("Zero value"))
+		if structHasZeroValues(account) {
+			t.Error("zero value")
 		}
 	}
 }
 func TestListAccountLedger(t *testing.T) {
+	client := testClient()
+	if !client.hasCredentials {
+		t.Skip("credentials are required to test")
+		return
+	}
+
 	var ledger []LedgerEntry
-	client := NewTestClient()
-	accounts, err := client.GetAccounts()
+	accounts, err := client.GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		cursor := client.ListAccountLedger(a.Id)
+		cursor := client.ListAccountLedger(context.Background(), a.Id)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&ledger); err != nil {
 				t.Error(err)
@@ -56,8 +71,8 @@ func TestListAccountLedger(t *testing.T) {
 
 			for _, l := range ledger {
 				// Check for decoding issues
-				if StructHasZeroValues(l) {
-					t.Error(errors.New("Zero value"))
+				if structHasZeroValues(l) {
+					t.Error("zero value")
 				}
 			}
 		}
@@ -65,15 +80,20 @@ func TestListAccountLedger(t *testing.T) {
 }
 
 func TestListHolds(t *testing.T) {
+	client := testClient()
+	if !client.hasCredentials {
+		t.Skip("credentials are required to test")
+		return
+	}
+
 	var holds []Hold
-	client := NewTestClient()
-	accounts, err := client.GetAccounts()
+	accounts, err := client.GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		cursor := client.ListHolds(a.Id)
+		cursor := client.ListHolds(context.Background(), a.Id)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&holds); err != nil {
 				t.Error(err)
@@ -81,8 +101,8 @@ func TestListHolds(t *testing.T) {
 
 			for _, h := range holds {
 				// Check for decoding issues
-				if StructHasZeroValues(h) {
-					t.Error(errors.New("Zero value"))
+				if structHasZeroValues(h) {
+					t.Error("zero value")
 				}
 			}
 		}

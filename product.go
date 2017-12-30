@@ -1,39 +1,41 @@
 package gdax
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/shopspring/decimal"
 	"net/url"
 	"strconv"
 	"time"
 )
 
 type Product struct {
-	Id             string  `json:"id"`
-	BaseCurrency   string  `json:"base_currency"`
-	QuoteCurrency  string  `json:"quote_currency"`
-	BaseMinSize    float64 `json:"base_min_size,string"`
-	BaseMaxSize    float64 `json:"base_max_size,string"`
-	QuoteIncrement float64 `json:"quote_increment,string"`
+	Id             string          `json:"id"`
+	BaseCurrency   string          `json:"base_currency"`
+	QuoteCurrency  string          `json:"quote_currency"`
+	BaseMinSize    decimal.Decimal `json:"base_min_size,string"`
+	BaseMaxSize    decimal.Decimal `json:"base_max_size,string"`
+	QuoteIncrement decimal.Decimal `json:"quote_increment,string"`
 }
 
 type Ticker struct {
-	TradeId int     `json:"trade_id,number"`
-	Price   float64 `json:"price,string"`
-	Size    float64 `json:"size,string"`
-	Time    Time    `json:"time,string"`
-	Bid     float64 `json:"bid,string"`
-	Ask     float64 `json:"ask,string"`
-	Volume  float64 `json:"volume,string"`
+	TradeId int             `json:"trade_id,number"`
+	Price   decimal.Decimal `json:"price,string"`
+	Size    decimal.Decimal `json:"size,string"`
+	Time    Time            `json:"time,string"`
+	Bid     decimal.Decimal `json:"bid,string"`
+	Ask     decimal.Decimal `json:"ask,string"`
+	Volume  decimal.Decimal `json:"volume,string"`
 }
 
 type Trade struct {
-	TradeId int     `json:"trade_id,number"`
-	Price   float64 `json:"price,string"`
-	Size    float64 `json:"size,string"`
-	Time    Time    `json:"time,string"`
-	Side    string  `json:"side"`
+	TradeId int             `json:"trade_id,number"`
+	Price   decimal.Decimal `json:"price,string"`
+	Size    decimal.Decimal `json:"size,string"`
+	Time    Time            `json:"time,string"`
+	Side    string          `json:"side"`
 }
 
 type HistoricRate struct {
@@ -46,17 +48,17 @@ type HistoricRate struct {
 }
 
 type Stats struct {
-	Low          float64 `json:"low,string"`
-	High         float64 `json:"high,string"`
-	Open         float64 `json:"open,string"`
-	Volume       float64 `json:"volume,string"`
-	Last         float64 `json:"last,string"`
-	Volume_30Day float64 `json:"volume_30day,string"`
+	Low          decimal.Decimal `json:"low,string"`
+	High         decimal.Decimal `json:"high,string"`
+	Open         decimal.Decimal `json:"open,string"`
+	Volume       decimal.Decimal `json:"volume,string"`
+	Last         decimal.Decimal `json:"last,string"`
+	Volume_30Day decimal.Decimal `json:"volume_30day,string"`
 }
 
 type BookEntry struct {
-	Price          float64
-	Size           float64
+	Price          decimal.Decimal
+	Size           decimal.Decimal
 	NumberOfOrders int
 	OrderId        string
 }
@@ -94,12 +96,12 @@ func (e *BookEntry) UnmarshalJSON(data []byte) error {
 		return errors.New("Expected string")
 	}
 
-	price, err := strconv.ParseFloat(priceString, 32)
+	price, err := decimal.NewFromString(priceString)
 	if err != nil {
 		return err
 	}
 
-	size, err := strconv.ParseFloat(sizeString, 32)
+	size, err := decimal.NewFromString(sizeString)
 	if err != nil {
 		return err
 	}
@@ -175,43 +177,47 @@ func (e *HistoricRate) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *Client) GetBook(product string, level int) (Book, error) {
+func (c *Client) GetBook(ctx context.Context, product string, level int) (Book, error) {
 	var book Book
 
 	requestURL := fmt.Sprintf("/products/%s/book?level=%d", product, level)
-	_, err := c.Request("GET", requestURL, nil, &book)
+	_, err := c.request(ctx, false, "GET", requestURL, nil, &book)
 	return book, err
 }
 
-func (c *Client) GetTicker(product string) (Ticker, error) {
+func (c *Client) GetTicker(ctx context.Context, product string) (Ticker, error) {
 	var ticker Ticker
 
 	requestURL := fmt.Sprintf("/products/%s/ticker", product)
-	_, err := c.Request("GET", requestURL, nil, &ticker)
+	_, err := c.request(ctx, false, "GET", requestURL, nil, &ticker)
 	return ticker, err
 }
 
-func (c *Client) ListTrades(product string,
-	p ...ListTradesParams) *Cursor {
+func (c *Client) ListTrades(ctx context.Context, product string, p ...ListTradesParams) *Cursor {
 	paginationParams := PaginationParams{}
 	if len(p) > 0 {
 		paginationParams = p[0].Pagination
 	}
 
-	return NewCursor(c, "GET", fmt.Sprintf("/products/%s/trades", product),
-		&paginationParams)
+	return NewCursor(
+		ctx,
+		c,
+		false,
+		"GET",
+		fmt.Sprintf("/products/%s/trades", product),
+		&paginationParams,
+	)
 }
 
-func (c *Client) GetProducts() ([]Product, error) {
+func (c *Client) GetProducts(ctx context.Context) ([]Product, error) {
 	var products []Product
 
 	requestURL := fmt.Sprintf("/products")
-	_, err := c.Request("GET", requestURL, nil, &products)
+	_, err := c.request(ctx, false, "GET", requestURL, nil, &products)
 	return products, err
 }
 
-func (c *Client) GetHistoricRates(product string,
-	p ...GetHistoricRatesParams) ([]HistoricRate, error) {
+func (c *Client) GetHistoricRates(ctx context.Context, product string, p ...GetHistoricRatesParams) ([]HistoricRate, error) {
 	var historicRates []HistoricRate
 	requestURL := fmt.Sprintf("/products/%s/candles", product)
 	params := GetHistoricRatesParams{}
@@ -229,13 +235,13 @@ func (c *Client) GetHistoricRates(product string,
 		requestURL = fmt.Sprintf("%s?%s", requestURL, values.Encode())
 	}
 
-	_, err := c.Request("GET", requestURL, nil, &historicRates)
+	_, err := c.request(ctx, false, "GET", requestURL, nil, &historicRates)
 	return historicRates, err
 }
 
-func (c *Client) GetStats(product string) (Stats, error) {
+func (c *Client) GetStats(ctx context.Context, product string) (Stats, error) {
 	var stats Stats
 	requestURL := fmt.Sprintf("/products/%s/stats", product)
-	_, err := c.Request("GET", requestURL, nil, &stats)
+	_, err := c.request(ctx, false, "GET", requestURL, nil, &stats)
 	return stats, err
 }
