@@ -39,7 +39,7 @@ func (c *Client) CreateReport(ctx context.Context, newReport *Report) (Report, e
 	return savedReport, err
 }
 
-func (c *Client) GetReportStatus(ctx context.Context, id string) (Report, error) {
+func (c *Client) GetReportStatus(ctx context.Context, id uuid.UUID) (Report, error) {
 	report := Report{}
 
 	url := fmt.Sprintf("/reports/%s", id)
