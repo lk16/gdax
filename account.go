@@ -4,14 +4,16 @@ import (
 	"context"
 	"fmt"
 	"github.com/shopspring/decimal"
+	"github.com/google/uuid"
 )
 
 type Account struct {
-	Id        string          `json:"id"`
+	Id        uuid.UUID       `json:"id,string"`
 	Balance   decimal.Decimal `json:"balance,string"`
 	Hold      decimal.Decimal `json:"hold,string"`
 	Available decimal.Decimal `json:"available,string"`
 	Currency  string          `json:"currency"`
+	ProfileId uuid.UUID       `json:"profile_id,string"`
 }
 
 type LedgerEntry struct {
@@ -24,9 +26,9 @@ type LedgerEntry struct {
 }
 
 type LedgerDetails struct {
-	OrderId   string `json:"order_id"`
-	TradeId   string `json:"trade_id"`
-	ProductId string `json:"product_id"`
+	OrderId   uuid.UUID `json:"order_id"`
+	TradeId   string    `json:"trade_id"`
+	ProductId string    `json:"product_id"`
 }
 
 type GetAccountLedgerParams struct {
@@ -34,12 +36,12 @@ type GetAccountLedgerParams struct {
 }
 
 type Hold struct {
-	AccountId string          `json:"account_id"`
+	Id        uuid.UUID       `json:"id,string"`
 	CreatedAt Time            `json:"created_at,string"`
-	UpdatedAt Time            `json:"updated_at,string"`
+	UpdatedAt *Time           `json:"updated_at,string,omitempty"`
 	Amount    decimal.Decimal `json:"amount,string"`
 	Type      string          `json:"type"`
-	Ref       string          `json:"ref"`
+	Ref       uuid.UUID       `json:"ref,string"`
 }
 
 type ListHoldsParams struct {
@@ -52,14 +54,14 @@ func (c *Client) GetAccounts(ctx context.Context) ([]Account, error) {
 	return accounts, err
 }
 
-func (c *Client) GetAccount(ctx context.Context, id string) (Account, error) {
+func (c *Client) GetAccount(ctx context.Context, id uuid.UUID) (Account, error) {
 	account := Account{}
 	url := fmt.Sprintf("/accounts/%s", id)
 	_, err := c.request(ctx, true, "GET", url, nil, &account)
 	return account, err
 }
 
-func (c *Client) ListAccountLedger(ctx context.Context, id string, p ...GetAccountLedgerParams) *Cursor {
+func (c *Client) ListAccountLedger(ctx context.Context, id uuid.UUID, p ...GetAccountLedgerParams) *Cursor {
 	paginationParams := PaginationParams{}
 	if len(p) > 0 {
 		paginationParams = p[0].Pagination
@@ -74,7 +76,7 @@ func (c *Client) ListAccountLedger(ctx context.Context, id string, p ...GetAccou
 	)
 }
 
-func (c *Client) ListHolds(ctx context.Context, id string, p ...ListHoldsParams) *Cursor {
+func (c *Client) ListHolds(ctx context.Context, id uuid.UUID, p ...ListHoldsParams) *Cursor {
 	paginationParams := PaginationParams{}
 	if len(p) > 0 {
 		paginationParams = p[0].Pagination

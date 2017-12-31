@@ -6,13 +6,7 @@ import (
 )
 
 func TestListFills(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	cursor := client.ListFills(context.Background())
+	cursor := testReadOnlyClient().ListFills(context.Background())
 	var fills []Fill
 
 	for cursor.HasMore {
@@ -29,7 +23,7 @@ func TestListFills(t *testing.T) {
 	params := ListFillsParams{
 		ProductId: "BTC-USD",
 	}
-	cursor = client.ListFills(context.Background(), params)
+	cursor = testReadOnlyClient().ListFills(context.Background(), params)
 	for cursor.HasMore {
 		if err := cursor.NextPage(&fills); err != nil {
 			t.Error(err)

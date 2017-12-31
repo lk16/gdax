@@ -1,3 +1,6 @@
+/*
+Package gdax implements a client library for the gdax api. See https://docs.gdax.com/ for api documentation.
+*/
 package gdax
 
 import (
@@ -26,6 +29,74 @@ type Client struct {
 	httpClient     *http.Client
 }
 
+// NewPublicClient creates a client for the public restful endpoint only.
+// Calling any methods that use the private restful endpoint will return errors.
+// Requests to the public endpoint are rate limited to 3 requests per second.
+//
+// Example:
+// import (
+//   "context"
+//   "github.com/randyp/gdax"
+//   "net/http"
+//  )
+//
+// client := NewPublicClient(&http.Client{
+//   Timeout: 15 * time.Second,
+// })
+// currencies := client.GetCurrencies(context.Background())
+// // do something with the currencies
+func NewPublicClient(httpClient *http.Client) *Client {
+	client := Client{
+		BaseURL:        "https://api.gdax.com",
+		secret:         "",
+		key:            "",
+		passphrase:     "",
+		hasCredentials: false,
+		privateLimiter: rate.NewLimiter(rate.Every(200*time.Millisecond), 1),
+		publicLimiter:  rate.NewLimiter(rate.Every(333*time.Millisecond), 1),
+		httpClient:     httpClient,
+	}
+
+	return &client
+}
+
+// NewClient creates a client for the public and private restful endpoints.
+// Requests to the public endpoint are rate limited to 3 requests per second.
+// Requests to the private endpoint are rate limited to 5 requests per second.
+//
+// Example:
+// import (
+//   "context"
+//   "github.com/randyp/gdax"
+//   "net/http"
+//   "os"
+//  )
+//
+// client := NewClient(
+// 	 &http.Client{
+//     Timeout: 15 * time.Second,
+//   },
+//   os.Getenv("COINBASE_SECRET"),
+//   os.Getenv("COINBASE_KEY"),
+//   os.Getenv("COINBASE_PASSPHRASE"),
+// )
+// accounts := client.GetAccounts(context.Background())
+// // do something with the accounts
+func NewClient(httpClient *http.Client, secret, key, passphrase string) *Client {
+	client := Client{
+		BaseURL:        "https://api.gdax.com",
+		secret:         secret,
+		key:            key,
+		passphrase:     passphrase,
+		hasCredentials: true,
+		privateLimiter: rate.NewLimiter(rate.Every(200*time.Millisecond), 1),
+		publicLimiter:  rate.NewLimiter(rate.Every(333*time.Millisecond), 1),
+		httpClient:     httpClient,
+	}
+
+	return &client
+}
+
 func (c *Client) request(ctx context.Context, private bool, method string, url string, params, result interface{}) (res *http.Response, err error) {
 	if private && !c.hasCredentials {
 		return res, errors.New("cannot use a public client to make requests to the private api")
@@ -51,7 +122,7 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", "Baylatent Bot 2.0")
+	req.Header.Add("User-Agent", "github.com/randy/gdax")
 
 	if c.hasCredentials {
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
@@ -88,6 +159,10 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	}
 
 	if result != nil {
+		//jsonBody, err := ioutil.ReadAll(res.Body)
+		//decoder := json.NewDecoder(bytes.NewReader(jsonBody))
+		//fmt.Printf("%s\n", string(jsonBody))
+
 		decoder := json.NewDecoder(res.Body)
 		if err = decoder.Decode(result); err != nil {
 			return res, err

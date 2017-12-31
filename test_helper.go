@@ -6,17 +6,50 @@ import (
 	"net/http"
 	"reflect"
 	"time"
+	"os"
 )
 
-var sharedTestClient *Client
+var sharedTestPublicClient *Client
 
-func testClient() *Client {
-	if sharedTestClient == nil {
-		sharedTestClient = NewPublicClient(&http.Client{
-			Timeout: 15 * time.Second,
-		})
+func testPublicClient() *Client {
+	if sharedTestPublicClient == nil {
+		sharedTestPublicClient = NewPublicClient(
+			&http.Client{
+				Timeout: 15 * time.Second,
+			},
+		)
 	}
-	return sharedTestClient
+	return sharedTestPublicClient
+}
+
+var sharedTestReadOnlyClient *Client
+func testReadOnlyClient() *Client {
+	if sharedTestReadOnlyClient == nil {
+		sharedTestReadOnlyClient = NewClient(
+			&http.Client{
+				Timeout: 15 * time.Second,
+			},
+			os.Getenv("COINBASE_SECRET_RO"),
+			os.Getenv("COINBASE_KEY_RO"),
+			os.Getenv("COINBASE_PASSPHRASE_RO"),
+		)
+	}
+	return sharedTestReadOnlyClient
+}
+
+var sharedTestReadWriteClient *Client
+func testReadWriteClient() *Client {
+	if sharedTestReadWriteClient == nil {
+		sharedTestReadWriteClient = NewClient(
+			&http.Client{
+				Timeout: 15 * time.Second,
+			},
+			os.Getenv("COINBASE_SECRET"),
+			os.Getenv("COINBASE_KEY"),
+			os.Getenv("COINBASE_PASSPHRASE"),
+		)
+	}
+	return sharedTestReadWriteClient
 }
 
 func structHasZeroValues(i interface{}) bool {

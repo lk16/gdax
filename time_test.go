@@ -8,7 +8,7 @@ import (
 )
 
 func TestGetTime(t *testing.T) {
-	serverTime, err := testClient().GetTime(context.Background())
+	serverTime, err := testPublicClient().GetTime(context.Background())
 	if err != nil {
 		t.Error(err)
 	}

@@ -6,15 +6,13 @@ import (
 )
 
 func TestGetAccounts(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	accounts, err := client.GetAccounts(context.Background())
+	accounts, err := testReadOnlyClient().GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
+	}
+
+	if len(accounts) == 0 {
+		t.Error("no accounts were found")
 	}
 
 	// Check for decoding issues
@@ -26,19 +24,13 @@ func TestGetAccounts(t *testing.T) {
 }
 
 func TestGetAccount(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	accounts, err := client.GetAccounts(context.Background())
+	accounts, err := testReadOnlyClient().GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		account, err := client.GetAccount(context.Background(), a.Id)
+		account, err := testReadOnlyClient().GetAccount(context.Background(), a.Id)
 		if err != nil {
 			t.Error(err)
 		}
@@ -50,20 +42,14 @@ func TestGetAccount(t *testing.T) {
 	}
 }
 func TestListAccountLedger(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	var ledger []LedgerEntry
-	accounts, err := client.GetAccounts(context.Background())
+	accounts, err := testReadOnlyClient().GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		cursor := client.ListAccountLedger(context.Background(), a.Id)
+		cursor := testReadOnlyClient().ListAccountLedger(context.Background(), a.Id)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&ledger); err != nil {
 				t.Error(err)
@@ -80,20 +66,14 @@ func TestListAccountLedger(t *testing.T) {
 }
 
 func TestListHolds(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	var holds []Hold
-	accounts, err := client.GetAccounts(context.Background())
+	accounts, err := testReadOnlyClient().GetAccounts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
 
 	for _, a := range accounts {
-		cursor := client.ListHolds(context.Background(), a.Id)
+		cursor := testReadOnlyClient().ListHolds(context.Background(), a.Id)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&holds); err != nil {
 				t.Error(err)

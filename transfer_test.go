@@ -9,12 +9,6 @@ import (
 func TestCreateTransfer(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	transfer := Transfer{
 		Type:              "deposit",
 		Amount:            requireDecimalFromString("1.00"),
@@ -25,7 +19,7 @@ func TestCreateTransfer(t *testing.T) {
 		return
 	}
 
-	depositTransfer, err := client.CreateTransfer(context.Background(), &transfer)
+	depositTransfer, err := testReadWriteClient().CreateTransfer(context.Background(), &transfer)
 	if err != nil {
 		t.Error(err)
 		return

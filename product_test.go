@@ -7,13 +7,7 @@ import (
 )
 
 func TestGetProducts(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	products, err := client.GetProducts(context.Background())
+	products, err := testPublicClient().GetProducts(context.Background())
 	if err != nil {
 		t.Error(err)
 	}
@@ -26,34 +20,16 @@ func TestGetProducts(t *testing.T) {
 }
 
 func TestGetBook(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	_, err := client.GetBook(context.Background(), "BTC-USD", 1)
-	if err != nil {
-		t.Error(err)
-	}
-	_, err = client.GetBook(context.Background(), "BTC-USD", 2)
-	if err != nil {
-		t.Error(err)
-	}
-	_, err = client.GetBook(context.Background(), "BTC-USD", 3)
-	if err != nil {
-		t.Error(err)
+	for level := range []int{1, 2, 3} {
+		_, err := testPublicClient().GetBook(context.Background(), "BTC-USD", level)
+		if err != nil {
+			t.Error(err)
+		}
 	}
 }
 
 func TestGetTicker(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	ticker, err := client.GetTicker(context.Background(), "BTC-USD")
+	ticker, err := testPublicClient().GetTicker(context.Background(), "BTC-USD")
 	if err != nil {
 		t.Error(err)
 	}
@@ -64,16 +40,10 @@ func TestGetTicker(t *testing.T) {
 }
 
 func TestListTrades(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	var trades []Trade
-	cursor := client.ListTrades(context.Background(), "BTC-USD")
+	cursor := testPublicClient().ListTrades(context.Background(), "BTC-USD")
 
-	for cursor.HasMore {
+	if cursor.HasMore {
 		if err := cursor.NextPage(&trades); err != nil {
 			t.Error(err)
 		}
@@ -87,32 +57,20 @@ func TestListTrades(t *testing.T) {
 }
 
 func TestGetHistoricRates(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	params := GetHistoricRatesParams{
 		Start:       time.Now().Add(-24 * 4 * time.Hour),
 		End:         time.Now().Add(-24 * 2 * time.Hour),
 		Granularity: 1000,
 	}
 
-	_, err := client.GetHistoricRates(context.Background(), "BTC-USD", params)
+	_, err := testPublicClient().GetHistoricRates(context.Background(), "BTC-USD", params)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestGetStats(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	stats, err := client.GetStats(context.Background(), "BTC-USD")
+	stats, err := testPublicClient().GetStats(context.Background(), "BTC-USD")
 	if err != nil {
 		t.Error(err)
 	}

@@ -7,11 +7,7 @@ import (
 )
 
 func TestCreateReportAndStatus(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
+	t.Skip("gdax sandbox is down")
 
 	newReport := Report{
 		Type:      "fill",
@@ -19,12 +15,12 @@ func TestCreateReportAndStatus(t *testing.T) {
 		EndDate:   time.Now().Add(-24 * 2 * time.Hour),
 	}
 
-	report, err := client.CreateReport(context.Background(), &newReport)
+	report, err := testReadWriteClient().CreateReport(context.Background(), &newReport)
 	if err != nil {
 		t.Error(err)
 	}
 
-	currentReport, err := client.GetReportStatus(context.Background(), report.Id)
+	currentReport, err := testReadWriteClient().GetReportStatus(context.Background(), report.Id)
 	if err != nil {
 		t.Error(err)
 	}

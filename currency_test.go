@@ -6,8 +6,7 @@ import (
 )
 
 func TestGetCurrencies(t *testing.T) {
-	client := testClient()
-	currencies, err := client.GetCurrencies(context.Background())
+	currencies, err := testPublicClient().GetCurrencies(context.Background())
 	if err != nil {
 		t.Error(err)
 	}

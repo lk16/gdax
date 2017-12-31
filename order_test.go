@@ -9,12 +9,6 @@ import (
 func TestCreateLimitOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	order := Order{
 		Price:     requireDecimalFromString("1.00"),
 		Size:      requireDecimalFromString("1.00"),
@@ -22,7 +16,7 @@ func TestCreateLimitOrders(t *testing.T) {
 		ProductId: "BTC-USD",
 	}
 
-	savedOrder, err := client.CreateOrder(context.Background(), &order)
+	savedOrder, err := testReadWriteClient().CreateOrder(context.Background(), &order)
 	if err != nil {
 		t.Error(err)
 	}
@@ -41,12 +35,6 @@ func TestCreateLimitOrders(t *testing.T) {
 func TestCreateMarketOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	order := Order{
 		Funds:     requireDecimalFromString("10.00"),
 		Size:      requireDecimalFromString("2.00"),
@@ -55,7 +43,7 @@ func TestCreateMarketOrders(t *testing.T) {
 		ProductId: "BTC-USD",
 	}
 
-	savedOrder, err := client.CreateOrder(context.Background(), &order)
+	savedOrder, err := testReadWriteClient().CreateOrder(context.Background(), &order)
 	if err != nil {
 		t.Error(err)
 	}
@@ -74,21 +62,15 @@ func TestCreateMarketOrders(t *testing.T) {
 func TestCancelOrder(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	var orders []Order
-	cursor := client.ListOrders(context.Background())
+	cursor := testReadWriteClient().ListOrders(context.Background())
 	for cursor.HasMore {
 		if err := cursor.NextPage(&orders); err != nil {
 			t.Error(err)
 		}
 
 		for _, o := range orders {
-			if err := client.CancelOrder(context.Background(), o.Id); err != nil {
+			if err := testReadWriteClient().CancelOrder(context.Background(), o.Id); err != nil {
 				if err.Error() != "Order already done" {
 					t.Error(err)
 				}
@@ -100,12 +82,6 @@ func TestCancelOrder(t *testing.T) {
 func TestGetOrder(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	order := Order{
 		Price:     requireDecimalFromString("1.00"),
 		Size:      requireDecimalFromString("1.00"),
@@ -113,12 +89,12 @@ func TestGetOrder(t *testing.T) {
 		ProductId: "BTC-USD",
 	}
 
-	savedOrder, err := client.CreateOrder(context.Background(), &order)
+	savedOrder, err := testReadWriteClient().CreateOrder(context.Background(), &order)
 	if err != nil {
 		t.Error(err)
 	}
 
-	getOrder, err := client.GetOrder(context.Background(), savedOrder.Id)
+	getOrder, err := testReadWriteClient().GetOrder(context.Background(), savedOrder.Id)
 	if err != nil {
 		t.Error(err)
 	}
@@ -129,13 +105,7 @@ func TestGetOrder(t *testing.T) {
 }
 
 func TestListOrders(t *testing.T) {
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
-	cursor := client.ListOrders(context.Background())
+	cursor := testReadOnlyClient().ListOrders(context.Background())
 	var orders []Order
 
 	for cursor.HasMore {
@@ -150,7 +120,7 @@ func TestListOrders(t *testing.T) {
 		}
 	}
 
-	cursor = client.ListOrders(context.Background(), ListOrdersParams{Status: "open", ProductId: "LTC-EUR"})
+	cursor = testReadOnlyClient().ListOrders(context.Background(), ListOrdersParams{Status: "open", ProductId: "LTC-EUR"})
 	for cursor.HasMore {
 		if err := cursor.NextPage(&orders); err != nil {
 			t.Error(err)
@@ -167,21 +137,15 @@ func TestListOrders(t *testing.T) {
 func TestCancelAllOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	client := testClient()
-	if !client.hasCredentials {
-		t.Skip("credentials are required to test")
-		return
-	}
-
 	for _, pair := range []string{"BTC-USD", "ETH-USD", "LTC-USD"} {
 		order := Order{Price: requireDecimalFromString("1.00"), Size: requireDecimalFromString("10000.00"), Side: "buy", ProductId: pair}
 
-		if _, err := client.CreateOrder(context.Background(), &order); err != nil {
+		if _, err := testReadWriteClient().CreateOrder(context.Background(), &order); err != nil {
 			t.Error(err)
 		}
 	}
 
-	orderIDs, err := client.CancelAllOrders(context.Background(), CancelAllOrdersParams{ProductId: "LTC-USD"})
+	orderIDs, err := testReadWriteClient().CancelAllOrders(context.Background(), CancelAllOrdersParams{ProductId: "LTC-USD"})
 	if err != nil {
 		t.Error(err)
 	}
