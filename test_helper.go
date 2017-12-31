@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"time"
-	"os"
 )
 
 var sharedTestPublicClient *Client
@@ -23,6 +23,7 @@ func testPublicClient() *Client {
 }
 
 var sharedTestReadOnlyClient *Client
+
 func testReadOnlyClient() *Client {
 	if sharedTestReadOnlyClient == nil {
 		sharedTestReadOnlyClient = NewClient(
@@ -38,6 +39,7 @@ func testReadOnlyClient() *Client {
 }
 
 var sharedTestReadWriteClient *Client
+
 func testReadWriteClient() *Client {
 	if sharedTestReadWriteClient == nil {
 		sharedTestReadWriteClient = NewClient(

@@ -20,7 +20,7 @@ func TestCreateReportAndStatus(t *testing.T) {
 		t.Error(err)
 	}
 
-	currentReport, err := testReadWriteClient().GetReportStatus(context.Background(), report.Id)
+	currentReport, err := testReadWriteClient().GetReportStatus(context.Background(), report.ID)
 	if err != nil {
 		t.Error(err)
 	}

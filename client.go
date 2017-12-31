@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/time/rate"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -122,7 +123,7 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", "github.com/randy/gdax")
+	req.Header.Add("User-Agent", "github.com/randy/gdax 0.0.1")
 
 	if c.hasCredentials {
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
@@ -159,11 +160,11 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	}
 
 	if result != nil {
-		//jsonBody, err := ioutil.ReadAll(res.Body)
-		//decoder := json.NewDecoder(bytes.NewReader(jsonBody))
-		//fmt.Printf("%s\n", string(jsonBody))
+		jsonBody, err := ioutil.ReadAll(res.Body)
+		decoder := json.NewDecoder(bytes.NewReader(jsonBody))
+		fmt.Printf("%s\n", string(jsonBody))
 
-		decoder := json.NewDecoder(res.Body)
+		//decoder := json.NewDecoder(res.Body)
 		if err = decoder.Decode(result); err != nil {
 			return res, err
 		}

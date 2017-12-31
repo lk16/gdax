@@ -3,6 +3,7 @@ package gdax
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
@@ -21,7 +22,7 @@ type Order struct {
 	// Market Order
 	Funds decimal.Decimal `json:"funds,string,omitempty"`
 	// Response Fields
-	Id            string          `json:"id"`
+	ID            uuid.UUID       `json:"id,string,omitempty"`
 	Status        string          `json:"status,omitempty"`
 	Settled       bool            `json:"settled,omitempty"`
 	DoneReason    string          `json:"done_reason,omitempty"`
@@ -53,7 +54,7 @@ func (c *Client) CreateOrder(ctx context.Context, newOrder *Order) (Order, error
 	return savedOrder, err
 }
 
-func (c *Client) CancelOrder(ctx context.Context, id string) error {
+func (c *Client) CancelOrder(ctx context.Context, id uuid.UUID) error {
 	url := fmt.Sprintf("/orders/%s", id)
 	_, err := c.request(ctx, true, "DELETE", url, nil, nil)
 	return err
@@ -71,7 +72,7 @@ func (c *Client) CancelAllOrders(ctx context.Context, p ...CancelAllOrdersParams
 	return orderIDs, err
 }
 
-func (c *Client) GetOrder(ctx context.Context, id string) (Order, error) {
+func (c *Client) GetOrder(ctx context.Context, id uuid.UUID) (Order, error) {
 	var savedOrder Order
 
 	url := fmt.Sprintf("/orders/%s", id)

@@ -3,6 +3,7 @@ package gdax
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -17,7 +18,7 @@ type CreateReportParams struct {
 }
 
 type Report struct {
-	Id          string       `json:"id"`
+	ID          uuid.UUID    `json:"id,string,omitempty"`
 	Type        string       `json:"type"`
 	Status      string       `json:"status"`
 	CreatedAt   Time         `json:"created_at,string"`

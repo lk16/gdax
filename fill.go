@@ -3,6 +3,7 @@ package gdax
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
@@ -11,7 +12,7 @@ type Fill struct {
 	ProductId string          `json:"product_id"`
 	Price     decimal.Decimal `json:"price,string"`
 	Size      decimal.Decimal `json:"size,string"`
-	FillId    string          `json:"order_id"`
+	OrderId   uuid.UUID       `json:"order_id"`
 	CreatedAt Time            `json:"created_at,string"`
 	Fee       decimal.Decimal `json:"fee,string"`
 	Settled   bool            `json:"settled"`

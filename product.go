@@ -12,7 +12,7 @@ import (
 )
 
 type Product struct {
-	Id             string          `json:"id"`
+	ID             string          `json:"id"`
 	BaseCurrency   string          `json:"base_currency"`
 	QuoteCurrency  string          `json:"quote_currency"`
 	BaseMinSize    decimal.Decimal `json:"base_min_size,string"`

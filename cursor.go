@@ -18,7 +18,7 @@ type Cursor struct {
 
 func NewCursor(ctx context.Context, client *Client, private bool, method, url string, paginationParams *PaginationParams) *Cursor {
 	return &Cursor{
-		ctx: ctx,
+		ctx:        ctx,
 		Client:     client,
 		Method:     method,
 		URL:        url,

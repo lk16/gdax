@@ -3,12 +3,12 @@ package gdax
 import (
 	"context"
 	"fmt"
-	"github.com/shopspring/decimal"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type Account struct {
-	Id        uuid.UUID       `json:"id,string"`
+	ID        uuid.UUID       `json:"id,string"`
 	Balance   decimal.Decimal `json:"balance,string"`
 	Hold      decimal.Decimal `json:"hold,string"`
 	Available decimal.Decimal `json:"available,string"`
@@ -17,7 +17,7 @@ type Account struct {
 }
 
 type LedgerEntry struct {
-	Id        int             `json:"id,number"`
+	ID        int             `json:"id,number"`
 	CreatedAt Time            `json:"created_at,string"`
 	Amount    decimal.Decimal `json:"amount,string"`
 	Balance   decimal.Decimal `json:"balance,string"`
@@ -36,7 +36,8 @@ type GetAccountLedgerParams struct {
 }
 
 type Hold struct {
-	Id        uuid.UUID       `json:"id,string"`
+	ID uuid.UUID `json:"id,string"`
+	//AccountId uuid.UUID       `json:"id,string"` // Is documented but is not actually present on their production responses
 	CreatedAt Time            `json:"created_at,string"`
 	UpdatedAt *Time           `json:"updated_at,string,omitempty"`
 	Amount    decimal.Decimal `json:"amount,string"`

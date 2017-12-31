@@ -30,7 +30,7 @@ func TestGetAccount(t *testing.T) {
 	}
 
 	for _, a := range accounts {
-		account, err := testReadOnlyClient().GetAccount(context.Background(), a.Id)
+		account, err := testReadOnlyClient().GetAccount(context.Background(), a.ID)
 		if err != nil {
 			t.Error(err)
 		}
@@ -49,7 +49,7 @@ func TestListAccountLedger(t *testing.T) {
 	}
 
 	for _, a := range accounts {
-		cursor := testReadOnlyClient().ListAccountLedger(context.Background(), a.Id)
+		cursor := testReadOnlyClient().ListAccountLedger(context.Background(), a.ID)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&ledger); err != nil {
 				t.Error(err)
@@ -73,7 +73,7 @@ func TestListHolds(t *testing.T) {
 	}
 
 	for _, a := range accounts {
-		cursor := testReadOnlyClient().ListHolds(context.Background(), a.Id)
+		cursor := testReadOnlyClient().ListHolds(context.Background(), a.ID)
 		for cursor.HasMore {
 			if err := cursor.NextPage(&holds); err != nil {
 				t.Error(err)

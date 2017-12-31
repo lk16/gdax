@@ -7,7 +7,7 @@ import (
 )
 
 type Currency struct {
-	Id      string          `json:"id"`
+	ID      string          `json:"id"`
 	Name    string          `json:"name"`
 	MinSize decimal.Decimal `json:"min_size,string"`
 }

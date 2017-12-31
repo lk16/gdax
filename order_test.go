@@ -3,6 +3,7 @@ package gdax
 import (
 	"context"
 	"errors"
+	"github.com/google/uuid"
 	"testing"
 )
 
@@ -21,7 +22,7 @@ func TestCreateLimitOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.Id == "" {
+	if savedOrder.ID == uuid.Nil {
 		t.Error(errors.New("No create id found"))
 	}
 
@@ -48,7 +49,7 @@ func TestCreateMarketOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.Id == "" {
+	if savedOrder.ID == uuid.Nil {
 		t.Error(errors.New("No create id found"))
 	}
 
@@ -70,7 +71,7 @@ func TestCancelOrder(t *testing.T) {
 		}
 
 		for _, o := range orders {
-			if err := testReadWriteClient().CancelOrder(context.Background(), o.Id); err != nil {
+			if err := testReadWriteClient().CancelOrder(context.Background(), o.ID); err != nil {
 				if err.Error() != "Order already done" {
 					t.Error(err)
 				}
@@ -94,12 +95,12 @@ func TestGetOrder(t *testing.T) {
 		t.Error(err)
 	}
 
-	getOrder, err := testReadWriteClient().GetOrder(context.Background(), savedOrder.Id)
+	getOrder, err := testReadWriteClient().GetOrder(context.Background(), savedOrder.ID)
 	if err != nil {
 		t.Error(err)
 	}
 
-	if getOrder.Id != savedOrder.Id {
+	if getOrder.ID != savedOrder.ID {
 		t.Error(errors.New("Order ids do not match"))
 	}
 }
