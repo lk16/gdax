@@ -3,7 +3,7 @@ Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://
 
 ## Summary
 
-Go client library for [GDAX](https://www.gdax.com) restful endpoints and websocket feed. A heavily modified fork github.com/preichenberger/go-gdax so that we could:
+Go client library for [GDAX](https://www.gdax.com) restful endpoints and websocket feed. A heavily modified fork [github.com/preichenberger/go-gdax](//github.com/preichenberger/go-gdax) so that we could:
 * support rate limiting
 * support public-endpoint-only clients
 * use shopspring decimals, since floats will occasionally not work
