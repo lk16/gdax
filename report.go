@@ -5,17 +5,16 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"time"
-	r "github.com/randyp/gdax/report"
 )
 
 type CreateReport struct {
-	Type      r.Type `json:"type,string"`
-	StartDate time.Time   `json:"start_date,string"`
-	EndDate   time.Time   `json:"end_date,string"`
-	ProductID string      `json:"product_id,string,omitempty"`
-	AccountID *uuid.UUID  `json:"account_id,string,omitempty"`
-	Format    string      `json:"format,string,omitempty"`
-	Email     string      `json:"email,string,omitempty"`
+	Type      ReportType `json:"type,string"`
+	StartDate time.Time  `json:"start_date,string"`
+	EndDate   time.Time  `json:"end_date,string"`
+	ProductID string     `json:"product_id,string,omitempty"`
+	AccountID *uuid.UUID `json:"account_id,string,omitempty"`
+	Format    string     `json:"format,string,omitempty"`
+	Email     string     `json:"email,string,omitempty"`
 }
 
 type ReportParams struct {
@@ -25,8 +24,8 @@ type ReportParams struct {
 
 type Report struct {
 	ID          uuid.UUID    `json:"id,string,omitempty"`
-	Type        r.Type  `json:"type,string"`
-	Status      r.Status       `json:"status"`
+	Type        ReportType   `json:"type,string"`
+	Status      ReportStatus `json:"status"`
 	CreatedAt   Time         `json:"created_at,string"`
 	CompletedAt Time         `json:"completed_at,string,"`
 	ExpiresAt   Time         `json:"expires_at,string"`

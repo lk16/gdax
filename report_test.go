@@ -10,7 +10,7 @@ func TestCreateReportAndStatus(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
 	newReport := CreateReport{
-		Type:      "fill",
+		Type:      ReportTypeFills,
 		StartDate: time.Now().Add(-24 * 4 * time.Hour),
 		EndDate:   time.Now().Add(-24 * 2 * time.Hour),
 	}

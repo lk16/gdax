@@ -1,4 +1,4 @@
-package report
+package gdax
 
 import (
 	"encoding/json"
@@ -6,27 +6,27 @@ import (
 	"fmt"
 )
 
-type Status byte
+type ReportStatus byte
 
 const (
-	StatusPending  Status = iota
-	StatusCreating
-	StatusReady
+	ReportStatusPending ReportStatus = iota
+	ReportStatusCreating
+	ReportStatusReady
 )
 
-func (d *Status) MarshalJSON() ([]byte, error) {
+func (d *ReportStatus) MarshalJSON() ([]byte, error) {
 	switch *d {
-	case StatusPending:
+	case ReportStatusPending:
 		return json.Marshal("pending")
-	case StatusCreating:
+	case ReportStatusCreating:
 		return json.Marshal("creating")
-	case StatusReady:
+	case ReportStatusReady:
 		return json.Marshal("ready")
 	}
 	return nil, errors.New(fmt.Sprintf("unsupported Type ordinal: %d", *d))
 }
 
-func (d *Status) UnmarshalJSON(b []byte) error {
+func (d *ReportStatus) UnmarshalJSON(b []byte) error {
 	var s string
 	err := json.Unmarshal(b, &s)
 	if err != nil {
@@ -35,11 +35,11 @@ func (d *Status) UnmarshalJSON(b []byte) error {
 
 	switch s {
 	case "pending":
-		*d = StatusPending
+		*d = ReportStatusPending
 	case "creating":
-		*d = StatusCreating
+		*d = ReportStatusCreating
 	case "ready":
-		*d = StatusReady
+		*d = ReportStatusReady
 	default:
 		err = errors.New(fmt.Sprintf("unsupported Type string: '%s'", s))
 	}

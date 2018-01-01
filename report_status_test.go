@@ -1,11 +1,11 @@
-package report
+package gdax
 
 import (
 	"testing"
 )
 
-func TestStatusMarshalJson (t *testing.T) {
-	status := StatusPending
+func TestStatusMarshalJson(t *testing.T) {
+	status := ReportStatusPending
 	bytes, err := (&status).MarshalJSON()
 	if err != nil {
 		t.Error(err)
@@ -14,7 +14,7 @@ func TestStatusMarshalJson (t *testing.T) {
 		t.Errorf(`was expecting TypeFills to marshal to "fills", was %s`, string(bytes))
 	}
 
-	status = StatusCreating
+	status = ReportStatusCreating
 	bytes, err = (&status).MarshalJSON()
 	if err != nil {
 		t.Error(err)
@@ -23,7 +23,7 @@ func TestStatusMarshalJson (t *testing.T) {
 		t.Errorf(`was expecting TypeFills to marshal to "account", was %s`, string(bytes))
 	}
 
-	status = StatusReady
+	status = ReportStatusReady
 	bytes, err = (&status).MarshalJSON()
 	if err != nil {
 		t.Error(err)
@@ -33,44 +33,44 @@ func TestStatusMarshalJson (t *testing.T) {
 	}
 }
 
-func TestStatusMarshalJsonErr (t *testing.T) {
-	status := Status(255)
+func TestStatusMarshalJsonErr(t *testing.T) {
+	status := ReportStatus(255)
 	_, err := (&status).MarshalJSON()
 	if err == nil {
 		t.Errorf("was expecting a marshalling error")
 	}
 }
 
-func TestStatusUnmarshalJson (t *testing.T) {
-	var status Status
+func TestStatusUnmarshalJson(t *testing.T) {
+	var status ReportStatus
 
 	err := (&status).UnmarshalJSON([]byte(`"pending"`))
 	if err != nil {
 		t.Error(err)
 	}
-	if status != StatusPending {
-		t.Errorf("was expecting StatusPending")
+	if status != ReportStatusPending {
+		t.Errorf("was expecting ReportStatusPending")
 	}
 
 	err = (&status).UnmarshalJSON([]byte(`"creating"`))
 	if err != nil {
 		t.Error(err)
 	}
-	if status != StatusCreating {
-		t.Errorf("was expecting StatusCreating")
+	if status != ReportStatusCreating {
+		t.Errorf("was expecting ReportStatusCreating")
 	}
 
 	err = (&status).UnmarshalJSON([]byte(`"ready"`))
 	if err != nil {
 		t.Error(err)
 	}
-	if status != StatusReady {
-		t.Errorf("was expecting StatusReady")
+	if status != ReportStatusReady {
+		t.Errorf("was expecting ReportStatusReady")
 	}
 }
 
-func TestStatusUnmarshalJsonErr (t *testing.T) {
-	var status Status
+func TestStatusUnmarshalJsonErr(t *testing.T) {
+	var status ReportStatus
 	err := (&status).UnmarshalJSON([]byte(`"invalid_status"`))
 	if err == nil {
 		t.Error("was expecting and unmarshalling error")
