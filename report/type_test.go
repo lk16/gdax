@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestReportTypeMarshalJson (t *testing.T) {
+func TestTypeMarshalJson (t *testing.T) {
 	reportType := TypeFills
 	bytes, err := (&reportType).MarshalJSON()
 	if err != nil {
@@ -20,19 +20,19 @@ func TestReportTypeMarshalJson (t *testing.T) {
 		t.Error(err)
 	}
 	if string(bytes) != `"account"` {
-		t.Errorf(`was expecting TypeFills to marshal to "account", was %s`, string(bytes))
+		t.Errorf(`was expecting TypeAccount to marshal to "account", was %s`, string(bytes))
 	}
 }
 
-func TestReportTypeMarshalJsonErr (t *testing.T) {
-	reportType := Type(4)
+func TestTypeMarshalJsonErr (t *testing.T) {
+	reportType := Type(255)
 	_, err := (&reportType).MarshalJSON()
 	if err == nil {
 		t.Errorf("was expecting a marshalling error")
 	}
 }
 
-func TestReportTypeUnmarshalJson (t *testing.T) {
+func TestTypeUnmarshalJson (t *testing.T) {
 	var reportType Type
 
 	err := (&reportType).UnmarshalJSON([]byte(`"fills"`))
@@ -52,9 +52,9 @@ func TestReportTypeUnmarshalJson (t *testing.T) {
 	}
 }
 
-func TestReportTypeUnmarshalJsonErr (t *testing.T) {
+func TestTypeUnmarshalJsonErr (t *testing.T) {
 	var reportType Type
-	err := (&reportType).UnmarshalJSON([]byte(`"not__valid_report_type"`))
+	err := (&reportType).UnmarshalJSON([]byte(`"invalid_report_type"`))
 	if err == nil {
 		t.Error("was expecting and unmarshalling error")
 	}

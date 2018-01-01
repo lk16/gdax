@@ -26,7 +26,7 @@ type ReportParams struct {
 type Report struct {
 	ID          uuid.UUID    `json:"id,string,omitempty"`
 	Type        r.Type  `json:"type,string"`
-	Status      string       `json:"status"`
+	Status      r.Status       `json:"status"`
 	CreatedAt   Time         `json:"created_at,string"`
 	CompletedAt Time         `json:"completed_at,string,"`
 	ExpiresAt   Time         `json:"expires_at,string"`
