@@ -22,6 +22,21 @@ type ReportParams struct {
 	EndDate   time.Time `json:"end_date,string"`
 }
 
+type ReportType string
+
+const (
+	ReportTypeFills   ReportType = "fills"
+	ReportTypeAccount ReportType = "account"
+)
+
+type ReportStatus string
+
+const (
+	ReportStatusPending  ReportStatus = "pending"
+	ReportStatusCreating ReportStatus = "creating"
+	ReportStatusReady    ReportStatus = "ready"
+)
+
 type Report struct {
 	ID          uuid.UUID    `json:"id,string,omitempty"`
 	Type        ReportType   `json:"type,string"`

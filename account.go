@@ -16,6 +16,15 @@ type Account struct {
 	ProfileId uuid.UUID       `json:"profile_id,string"`
 }
 
+type LedgerEntryType string
+
+const (
+	LedgerEntryTypeTransfer LedgerEntryType = "transfer"
+	LedgerEntryTypeMatch    LedgerEntryType = "match"
+	LedgerEntryTypeFee      LedgerEntryType = "fee"
+	LedgerEntryTypeRebate   LedgerEntryType = "rebate"
+)
+
 type LedgerEntry struct {
 	ID        int             `json:"id,number"`
 	CreatedAt Time            `json:"created_at,string"`
@@ -34,6 +43,13 @@ type LedgerDetails struct {
 type GetAccountLedgerParams struct {
 	Pagination PaginationParams
 }
+
+type HoldType string
+
+const (
+	HoldTypeOrder    HoldType = "order"
+	HoldTypeTransfer HoldType = "transfer"
+)
 
 type Hold struct {
 	ID uuid.UUID `json:"id,string"`
