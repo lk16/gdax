@@ -41,7 +41,7 @@ type Hold struct {
 	CreatedAt Time            `json:"created_at,string"`
 	UpdatedAt *Time           `json:"updated_at,string,omitempty"`
 	Amount    decimal.Decimal `json:"amount,string"`
-	Type      string          `json:"type"`
+	Type      HoldType        `json:"type"`
 	Ref       uuid.UUID       `json:"ref,string"`
 }
 

@@ -26,7 +26,7 @@ func (d *LedgerEntryType) MarshalJSON() ([]byte, error) {
 	case LedgerEntryTypeRebate:
 		return json.Marshal("rebate")
 	}
-	return nil, errors.New(fmt.Sprintf("unsupported Type ordinal: %d", *d))
+	return nil, errors.New(fmt.Sprintf("unsupported LedgerEntryType ordinal: %d", *d))
 }
 
 func (d *LedgerEntryType) UnmarshalJSON(b []byte) error {
@@ -45,7 +45,7 @@ func (d *LedgerEntryType) UnmarshalJSON(b []byte) error {
 	case "rebate":
 		*d = LedgerEntryTypeRebate
 	default:
-		return errors.New(fmt.Sprintf("unsupported Type string: '%s'", s))
+		return errors.New(fmt.Sprintf("unsupported LedgerEntryType string: '%s'", s))
 	}
 	return nil
 }

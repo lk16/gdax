@@ -86,9 +86,9 @@ func TestLedgerEntryTypeUnmarshalJson(t *testing.T) {
 	}
 }
 
-func TestTypeUnmarshalJsonErr(t *testing.T) {
-	var reportType ReportType
-	err := (&reportType).UnmarshalJSON([]byte(`"invalid_ledger_entry_type"`))
+func TestLedgerEntryTypeUnmarshalJsonErr(t *testing.T) {
+	var ledgerEntryType LedgerEntryType
+	err := (&ledgerEntryType).UnmarshalJSON([]byte(`"invalid_ledger_entry_type"`))
 	if err == nil {
 		t.Error("was expecting and unmarshalling error")
 	}

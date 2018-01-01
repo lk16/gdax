@@ -23,7 +23,7 @@ func (d *ReportStatus) MarshalJSON() ([]byte, error) {
 	case ReportStatusReady:
 		return json.Marshal("ready")
 	}
-	return nil, errors.New(fmt.Sprintf("unsupported Type ordinal: %d", *d))
+	return nil, errors.New(fmt.Sprintf("unsupported ReportStatus ordinal: %d", *d))
 }
 
 func (d *ReportStatus) UnmarshalJSON(b []byte) error {
@@ -41,7 +41,7 @@ func (d *ReportStatus) UnmarshalJSON(b []byte) error {
 	case "ready":
 		*d = ReportStatusReady
 	default:
-		err = errors.New(fmt.Sprintf("unsupported Type string: '%s'", s))
+		err = errors.New(fmt.Sprintf("unsupported ReportStatus string: '%s'", s))
 	}
 	return err
 }
