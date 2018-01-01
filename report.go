@@ -7,14 +7,21 @@ import (
 	"time"
 )
 
-type ReportParams struct {
-	StartDate time.Time
-	EndDate   time.Time
+type ReportType byte
+
+type CreateReport struct {
+	Type      string     `json:"type,string"`
+	StartDate time.Time  `json:"start_date,string"`
+	EndDate   time.Time  `json:"end_date,string"`
+	ProductID string     `json:"product_id,string,omitempty"`
+	AccountID *uuid.UUID `json:"account_id,string,omitempty"`
+	Format    string     `json:"format,string,omitempty"`
+	Email     string     `json:"email,string,omitempty"`
 }
 
-type CreateReportParams struct {
-	Start time.Time
-	End   time.Time
+type ReportParams struct {
+	StartDate time.Time `json:"start_date"`
+	EndDate   time.Time `json:"end_date"`
 }
 
 type Report struct {
@@ -26,11 +33,9 @@ type Report struct {
 	ExpiresAt   Time         `json:"expires_at,string"`
 	FileURL     string       `json:"file_url"`
 	Params      ReportParams `json:"params"`
-	StartDate   time.Time
-	EndDate     time.Time
 }
 
-func (c *Client) CreateReport(ctx context.Context, newReport *Report) (Report, error) {
+func (c *Client) CreateReport(ctx context.Context, newReport *CreateReport) (Report, error) {
 	var savedReport Report
 
 	url := fmt.Sprintf("/reports")

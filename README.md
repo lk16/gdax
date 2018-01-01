@@ -6,10 +6,11 @@ Go GDAX [![GoDoc](http://img.shields.io/badge/godoc-reference-blue.svg)](http://
 Go client library for [GDAX](https://www.gdax.com) restful endpoints and websocket feed. A heavily modified fork [github.com/preichenberger/go-gdax](//github.com/preichenberger/go-gdax) so that we could:
 * use shopspring decimals for currenty amounts, since floats will occasionally be too precise
 * use uuid.UUID for all possible fields
-* add missing fields and optional query parameters
+* add missing fields, optional query parameters, missing api support
 * support rate limiting
 * support public-endpoint-only clients
 * adhere to go coding hygenic standards
+* fix broken requests, etc
 
 ## Installation
 
