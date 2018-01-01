@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/time/rate"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -160,11 +159,11 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	}
 
 	if result != nil {
-		jsonBody, err := ioutil.ReadAll(res.Body)
-		decoder := json.NewDecoder(bytes.NewReader(jsonBody))
-		fmt.Printf("%s\n", string(jsonBody))
+		//jsonBody, err := ioutil.ReadAll(res.Body)
+		//decoder := json.NewDecoder(bytes.NewReader(jsonBody))
+		//fmt.Printf("%s\n", string(jsonBody))
 
-		//decoder := json.NewDecoder(res.Body)
+		decoder := json.NewDecoder(res.Body)
 		if err = decoder.Decode(result); err != nil {
 			return res, err
 		}

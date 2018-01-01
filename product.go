@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+	"github.com/google/uuid"
 )
 
 type Product struct {
@@ -60,7 +61,7 @@ type BookEntry struct {
 	Price          decimal.Decimal
 	Size           decimal.Decimal
 	NumberOfOrders int
-	OrderId        string
+	OrderId        uuid.UUID
 }
 
 type Book struct {
@@ -119,7 +120,10 @@ func (e *BookEntry) UnmarshalJSON(data []byte) error {
 		if !ok {
 			return errors.New("Could not parse 3rd column, tried float and string")
 		}
-		e.OrderId = stringOrderId
+		e.OrderId, err = uuid.Parse(stringOrderId)
+		if err != nil {
+			return err
+		}
 
 	} else {
 		e.NumberOfOrders = int(numberOfOrdersFloat)
