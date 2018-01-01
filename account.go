@@ -13,7 +13,7 @@ type Account struct {
 	Hold      decimal.Decimal `json:"hold,string"`
 	Available decimal.Decimal `json:"available,string"`
 	Currency  string          `json:"currency,string"`
-	ProfileId uuid.UUID       `json:"profile_id,string"`
+	ProfileID uuid.UUID       `json:"profile_id,string"`
 }
 
 type LedgerEntryType string
@@ -35,8 +35,8 @@ type LedgerEntry struct {
 }
 
 type LedgerDetails struct {
-	OrderId   uuid.UUID `json:"order_id"`
-	TradeId   string    `json:"trade_id"`
+	OrderID   uuid.UUID `json:"order_id"`
+	TradeID   string    `json:"trade_id"`
 	ProductId string    `json:"product_id"`
 }
 

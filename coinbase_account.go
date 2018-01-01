@@ -15,10 +15,10 @@ const (
 
 type CoinbaseAccount struct {
 	ID       uuid.UUID           `json:"id,string"`
-	Name     string              `json:"name,string"`
+	Name     string              `json:"name"`
 	Balance  decimal.Decimal     `json:"balance,string"`
-	Currency string              `json:"currency, string"`
-	Type     CoinbaseAccountType `json:"type,string"`
+	Currency string              `json:"currency"`
+	Type     CoinbaseAccountType `json:"type"`
 	Primary  bool                `json:"primary,bool"`
 	Active   bool                `json:"active,bool"`
 

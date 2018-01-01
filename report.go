@@ -7,27 +7,34 @@ import (
 	"time"
 )
 
-type CreateReport struct {
-	Type      ReportType `json:"type,string"`
-	StartDate time.Time  `json:"start_date,string"`
-	EndDate   time.Time  `json:"end_date,string"`
-	ProductID string     `json:"product_id,string,omitempty"`
-	AccountID *uuid.UUID `json:"account_id,string,omitempty"`
-	Format    string     `json:"format,string,omitempty"`
-	Email     string     `json:"email,string,omitempty"`
-}
-
-type ReportParams struct {
-	StartDate time.Time `json:"start_date,string"`
-	EndDate   time.Time `json:"end_date,string"`
-}
-
 type ReportType string
 
 const (
 	ReportTypeFills   ReportType = "fills"
 	ReportTypeAccount ReportType = "account"
 )
+
+type ReportFormat string
+
+const (
+	ReportFormatPDF ReportFormat = "pdf"
+	ReportFormatCSV ReportFormat = "csv"
+)
+
+type CreateReport struct {
+	Type      ReportType   `json:"type"`
+	StartDate time.Time    `json:"start_date,string"`
+	EndDate   time.Time    `json:"end_date,string"`
+	ProductID string       `json:"product_id,string,omitempty"`
+	AccountID *uuid.UUID   `json:"account_id,string,omitempty"`
+	Format    ReportFormat `json:"format,omitempty"`
+	Email     string       `json:"email,string,omitempty"`
+}
+
+type ReportParams struct {
+	StartDate time.Time `json:"start_date,string"`
+	EndDate   time.Time `json:"end_date,string"`
+}
 
 type ReportStatus string
 
@@ -39,7 +46,7 @@ const (
 
 type Report struct {
 	ID          uuid.UUID    `json:"id,string,omitempty"`
-	Type        ReportType   `json:"type,string"`
+	Type        ReportType   `json:"type"`
 	Status      ReportStatus `json:"status"`
 	CreatedAt   Time         `json:"created_at,string"`
 	CompletedAt Time         `json:"completed_at,string,"`
