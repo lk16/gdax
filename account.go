@@ -12,7 +12,7 @@ type Account struct {
 	Balance   decimal.Decimal `json:"balance,string"`
 	Hold      decimal.Decimal `json:"hold,string"`
 	Available decimal.Decimal `json:"available,string"`
-	Currency  string          `json:"currency"`
+	Currency  string          `json:"currency,string"`
 	ProfileId uuid.UUID       `json:"profile_id,string"`
 }
 
