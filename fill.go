@@ -7,6 +7,20 @@ import (
 	"github.com/shopspring/decimal"
 )
 
+type FillSide string
+
+const (
+	FillSideBuy  FillSide = "buy"
+	FillSideSell FillSide = "sell"
+)
+
+type FillLiquidity rune
+
+const (
+	LiquidityTaker FillLiquidity = 'T'
+	LiquidityMaker FillLiquidity = 'M'
+)
+
 type Fill struct {
 	TradeId   int             `json:"trade_id,int"`
 	ProductId string          `json:"product_id"`
@@ -16,8 +30,8 @@ type Fill struct {
 	CreatedAt Time            `json:"created_at,string"`
 	Fee       decimal.Decimal `json:"fee,string"`
 	Settled   bool            `json:"settled"`
-	Side      string          `json:"side"`
-	Liquidity string          `json:"liquidity"`
+	Side      FillSide        `json:"side"`
+	Liquidity FillLiquidity   `json:"liquidity"`
 }
 
 type ListFillsParams struct {
