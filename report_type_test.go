@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestTypeMarshalJson(t *testing.T) {
+func TestReportTypeMarshalJson(t *testing.T) {
 	reportType := ReportTypeFills
 	bytes, err := (&reportType).MarshalJSON()
 	if err != nil {
@@ -24,7 +24,7 @@ func TestTypeMarshalJson(t *testing.T) {
 	}
 }
 
-func TestTypeMarshalJsonErr(t *testing.T) {
+func TestReportTypeMarshalJsonErr(t *testing.T) {
 	reportType := ReportType(255)
 	_, err := (&reportType).MarshalJSON()
 	if err == nil {
@@ -32,7 +32,7 @@ func TestTypeMarshalJsonErr(t *testing.T) {
 	}
 }
 
-func TestTypeUnmarshalJson(t *testing.T) {
+func TestReportTypeUnmarshalJson(t *testing.T) {
 	var reportType ReportType
 
 	err := (&reportType).UnmarshalJSON([]byte(`"fills"`))
@@ -52,7 +52,7 @@ func TestTypeUnmarshalJson(t *testing.T) {
 	}
 }
 
-func TestTypeUnmarshalJsonErr(t *testing.T) {
+func TestReportTypeUnmarshalJsonErr(t *testing.T) {
 	var reportType ReportType
 	err := (&reportType).UnmarshalJSON([]byte(`"invalid_report_type"`))
 	if err == nil {

@@ -21,7 +21,7 @@ type LedgerEntry struct {
 	CreatedAt Time            `json:"created_at,string"`
 	Amount    decimal.Decimal `json:"amount,string"`
 	Balance   decimal.Decimal `json:"balance,string"`
-	Type      string          `json:"type"`
+	Type      LedgerEntryType `json:"type"`
 	Details   LedgerDetails   `json:"details"`
 }
 

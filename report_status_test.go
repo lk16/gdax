@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestStatusMarshalJson(t *testing.T) {
+func TestReportStatusMarshalJson(t *testing.T) {
 	status := ReportStatusPending
 	bytes, err := (&status).MarshalJSON()
 	if err != nil {
@@ -33,7 +33,7 @@ func TestStatusMarshalJson(t *testing.T) {
 	}
 }
 
-func TestStatusMarshalJsonErr(t *testing.T) {
+func TestReportStatusMarshalJsonErr(t *testing.T) {
 	status := ReportStatus(255)
 	_, err := (&status).MarshalJSON()
 	if err == nil {
@@ -41,7 +41,7 @@ func TestStatusMarshalJsonErr(t *testing.T) {
 	}
 }
 
-func TestStatusUnmarshalJson(t *testing.T) {
+func TestReportStatusUnmarshalJson(t *testing.T) {
 	var status ReportStatus
 
 	err := (&status).UnmarshalJSON([]byte(`"pending"`))
@@ -69,9 +69,9 @@ func TestStatusUnmarshalJson(t *testing.T) {
 	}
 }
 
-func TestStatusUnmarshalJsonErr(t *testing.T) {
+func TestReportStatusUnmarshalJsonErr(t *testing.T) {
 	var status ReportStatus
-	err := (&status).UnmarshalJSON([]byte(`"invalid_status"`))
+	err := (&status).UnmarshalJSON([]byte(`"invalid_report_status"`))
 	if err == nil {
 		t.Error("was expecting and unmarshalling error")
 	}
