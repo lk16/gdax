@@ -11,13 +11,34 @@ import (
 
 var sharedTestPublicClient *Client
 
+func initTestClients() {
+	sharedTestPublicClient = NewPublicClient(
+		&http.Client{
+			Timeout: 15 * time.Second,
+		},
+	)
+	sharedTestReadOnlyClient = NewClient(
+		sharedTestPublicClient.httpClient,
+		os.Getenv("COINBASE_SECRET_RO"),
+		os.Getenv("COINBASE_KEY_RO"),
+		os.Getenv("COINBASE_PASSPHRASE_RO"),
+	)
+	sharedTestReadOnlyClient.publicLimiter = sharedTestPublicClient.publicLimiter
+	sharedTestReadOnlyClient.privateLimiter = sharedTestPublicClient.privateLimiter
+
+	sharedTestReadWriteClient = NewClient(
+		sharedTestPublicClient.httpClient,
+		os.Getenv("COINBASE_SECRET"),
+		os.Getenv("COINBASE_KEY"),
+		os.Getenv("COINBASE_PASSPHRASE"),
+	)
+	sharedTestReadWriteClient.publicLimiter = sharedTestPublicClient.publicLimiter
+	sharedTestReadWriteClient.privateLimiter = sharedTestPublicClient.privateLimiter
+}
+
 func testPublicClient() *Client {
 	if sharedTestPublicClient == nil {
-		sharedTestPublicClient = NewPublicClient(
-			&http.Client{
-				Timeout: 15 * time.Second,
-			},
-		)
+		initTestClients()
 	}
 	return sharedTestPublicClient
 }
@@ -26,14 +47,7 @@ var sharedTestReadOnlyClient *Client
 
 func testReadOnlyClient() *Client {
 	if sharedTestReadOnlyClient == nil {
-		sharedTestReadOnlyClient = NewClient(
-			&http.Client{
-				Timeout: 15 * time.Second,
-			},
-			os.Getenv("COINBASE_SECRET_RO"),
-			os.Getenv("COINBASE_KEY_RO"),
-			os.Getenv("COINBASE_PASSPHRASE_RO"),
-		)
+		initTestClients()
 	}
 	return sharedTestReadOnlyClient
 }
@@ -42,14 +56,7 @@ var sharedTestReadWriteClient *Client
 
 func testReadWriteClient() *Client {
 	if sharedTestReadWriteClient == nil {
-		sharedTestReadWriteClient = NewClient(
-			&http.Client{
-				Timeout: 15 * time.Second,
-			},
-			os.Getenv("COINBASE_SECRET"),
-			os.Getenv("COINBASE_KEY"),
-			os.Getenv("COINBASE_PASSPHRASE"),
-		)
+		initTestClients()
 	}
 	return sharedTestReadWriteClient
 }
