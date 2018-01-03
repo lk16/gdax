@@ -1,5 +1,7 @@
 package gdax
 
+import "github.com/shopspring/decimal"
+
 type Message struct {
 	Type          string           `json:"type"`
 	ProductId     string           `json:"product_id"`
@@ -10,24 +12,24 @@ type Message struct {
 	MakerOrderId  string           `json:"maker_order_id"`
 	TakerOrderId  string           `json:"taker_order_id"`
 	Time          Time             `json:"time,string"`
-	RemainingSize float64          `json:"remaining_size,string"`
-	NewSize       float64          `json:"new_size,string"`
-	OldSize       float64          `json:"old_size,string"`
-	Size          float64          `json:"size,string"`
-	Price         float64          `json:"price,string"`
+	RemainingSize decimal.Decimal  `json:"remaining_size,string"`
+	NewSize       decimal.Decimal  `json:"new_size,string"`
+	OldSize       decimal.Decimal  `json:"old_size,string"`
+	Size          decimal.Decimal  `json:"size,string"`
+	Price         decimal.Decimal  `json:"price,string"`
 	Side          string           `json:"side"`
 	Reason        string           `json:"reason"`
 	OrderType     string           `json:"order_type"`
-	Funds         float64          `json:"funds,string"`
-	NewFunds      float64          `json:"new_funds,string"`
-	OldFunds      float64          `json:"old_funds,string"`
+	Funds         decimal.Decimal  `json:"funds,string"`
+	NewFunds      decimal.Decimal  `json:"new_funds,string"`
+	OldFunds      decimal.Decimal  `json:"old_funds,string"`
 	Message       string           `json:"message"`
 	Bids          [][]string       `json:"bids,omitempty"`
 	Asks          [][]string       `json:"asks,omitempty"`
 	Changes       [][]string       `json:"changes,omitempty"`
-	LastSize      float64          `json:"last_size,string"`
-	BestBid       float64          `json:"best_bid,string"`
-	BestAsk       float64          `json:"best_ask,string"`
+	LastSize      decimal.Decimal  `json:"last_size,string"`
+	BestBid       decimal.Decimal  `json:"best_bid,string"`
+	BestAsk       decimal.Decimal  `json:"best_ask,string"`
 	Channels      []MessageChannel `json:"channels"`
 }
 
