@@ -14,11 +14,11 @@ const (
 	FillSideSell FillSide = "sell"
 )
 
-type FillLiquidity rune
+type FillLiquidity string
 
 const (
-	LiquidityTaker FillLiquidity = 'T'
-	LiquidityMaker FillLiquidity = 'M'
+	LiquidityTaker FillLiquidity = "T"
+	LiquidityMaker FillLiquidity = "M"
 )
 
 type Fill struct {

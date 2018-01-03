@@ -7,7 +7,7 @@ import (
 
 func TestGetTrailingVolume(t *testing.T) {
 	t.Skip("Still debugging")
-	
+
 	volume, err := testReadOnlyClient().GetTrailingVolume(context.Background())
 	if err != nil {
 		t.Error(err)
