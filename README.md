@@ -15,7 +15,7 @@ Go client library for [GDAX](https://www.gdax.com) restful endpoints and websock
 ## Installation
 
 ```sh
-go get github.com/randy/go-gdax
+go get github.com/randyp/go-gdax
 ```
 
 ## Documentation
