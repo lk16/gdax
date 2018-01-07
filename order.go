@@ -20,9 +20,9 @@ type Order struct {
 	PostOnly    bool            `json:"post_only,omitempty"`
 	CancelAfter string          `json:"cancel_after,omitempty"`
 	// Market Order
-	Funds decimal.Decimal `json:"funds,string,omitempty"`
+	Funds string `json:"funds,omitempty"`
 	// Response Fields
-	ID            uuid.UUID       `json:"id,string,omitempty"`
+	ID            string       `json:"id,omitempty"`
 	Status        string          `json:"status,omitempty"`
 	Settled       bool            `json:"settled,omitempty"`
 	DoneReason    string          `json:"done_reason,omitempty"`
