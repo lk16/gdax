@@ -60,7 +60,7 @@ func TestGetHistoricRates(t *testing.T) {
 	params := GetHistoricRatesParams{
 		Start:       time.Now().Add(-24 * 4 * time.Hour),
 		End:         time.Now().Add(-24 * 2 * time.Hour),
-		Granularity: 1000,
+		Granularity: 3600,
 	}
 
 	_, err := testPublicClient().GetHistoricRates(context.Background(), "BTC-USD", params)
