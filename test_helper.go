@@ -76,18 +76,18 @@ func structHasZeroValues(i interface{}) bool {
 	return false
 }
 
-func compareProperties(a, b interface{}, properties []string) (bool, error) {
+func compareFields(a, b interface{}, properties []string) error {
 	aValueOf := reflect.ValueOf(a)
 	bValueOf := reflect.ValueOf(b)
 
-	for _, property := range properties {
-		aValue := reflect.Indirect(aValueOf).FieldByName(property).Interface()
-		bValue := reflect.Indirect(bValueOf).FieldByName(property).Interface()
+	for _, field := range properties {
+		aValue := reflect.Indirect(aValueOf).FieldByName(field).Interface()
+		bValue := reflect.Indirect(bValueOf).FieldByName(field).Interface()
 
 		if aValue != bValue {
-			return false, errors.New(fmt.Sprintf("%s not equal", property))
+			return errors.New(fmt.Sprintf("for field %s: (%s) not equal to (%s)", field, aValue, bValue))
 		}
 	}
 
-	return true, nil
+	return nil
 }

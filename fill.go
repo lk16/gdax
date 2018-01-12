@@ -7,13 +7,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-type FillSide string
-
-const (
-	FillSideBuy  FillSide = "buy"
-	FillSideSell FillSide = "sell"
-)
-
 type FillLiquidity string
 
 const (
@@ -30,7 +23,7 @@ type Fill struct {
 	CreatedAt Time            `json:"created_at,string"`
 	Fee       decimal.Decimal `json:"fee,string"`
 	Settled   bool            `json:"settled"`
-	Side      FillSide        `json:"side"`
+	Side                      `json:"side"`
 	Liquidity FillLiquidity   `json:"liquidity"`
 }
 

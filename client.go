@@ -16,6 +16,8 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+	//"io/ioutil"
+	//"log"
 )
 
 type Client struct {
@@ -150,7 +152,13 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	if res.StatusCode != 200 {
 		defer res.Body.Close()
 		coinbaseError := Error{}
+
+		//body, _ := ioutil.ReadAll(res.Body)
+		//log.Println(string(body))
+		//decoder := json.NewDecoder(bytes.NewReader(body))
+
 		decoder := json.NewDecoder(res.Body)
+
 		if err := decoder.Decode(&coinbaseError); err != nil {
 			return res, err
 		}
@@ -159,9 +167,9 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	}
 
 	if result != nil {
-		//jsonBody, err := ioutil.ReadAll(res.Body)
-		//decoder := json.NewDecoder(bytes.NewReader(jsonBody))
-		//fmt.Printf("%s\n", string(jsonBody))
+		//body, _ := ioutil.ReadAll(res.Body)
+		//log.Println(string(body))
+		//decoder := json.NewDecoder(bytes.NewReader(body))
 
 		decoder := json.NewDecoder(res.Body)
 		if err = decoder.Decode(result); err != nil {

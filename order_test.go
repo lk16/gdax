@@ -3,16 +3,16 @@ package gdax
 import (
 	"context"
 	"errors"
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 	"testing"
 )
 
 func TestCreateLimitOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	order := Order{
-		Price:     requireDecimalFromString("1.00"),
-		Size:      requireDecimalFromString("1.00"),
+	order := OrderRequest{
+		Price:     RequireDecimalFromString("1.00"),
+		Size:      RequireDecimalFromString("1.00"),
 		Side:      "buy",
 		ProductId: "BTC-USD",
 	}
@@ -22,12 +22,12 @@ func TestCreateLimitOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.ID == uuid.Nil {
+	if savedOrder.ID == "" {
 		t.Error(errors.New("No create id found"))
 	}
 
 	props := []string{"Price", "Size", "Side", "ProductId"}
-	_, err = compareProperties(order, savedOrder, props)
+	err = compareFields(order, savedOrder, props)
 	if err != nil {
 		t.Error(err)
 	}
@@ -36,9 +36,9 @@ func TestCreateLimitOrders(t *testing.T) {
 func TestCreateMarketOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	order := Order{
-		Funds:     requireDecimalFromString("10.00"),
-		Size:      requireDecimalFromString("2.00"),
+	order := OrderRequest{
+		Funds:     "10.00",
+		Size:      RequireDecimalFromString("2.00"),
 		Side:      "buy",
 		Type:      "market",
 		ProductId: "BTC-USD",
@@ -49,12 +49,12 @@ func TestCreateMarketOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.ID == uuid.Nil {
+	if savedOrder.ID == "" {
 		t.Error(errors.New("No create id found"))
 	}
 
 	props := []string{"Price", "Size", "Side", "ProductId"}
-	_, err = compareProperties(order, savedOrder, props)
+	err = compareFields(order, savedOrder, props)
 	if err != nil {
 		t.Error(err)
 	}
@@ -63,7 +63,7 @@ func TestCreateMarketOrders(t *testing.T) {
 func TestCancelOrder(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	var orders []Order
+	var orders []OrderResponse
 	cursor := testReadWriteClient().ListOrders(context.Background())
 	for cursor.HasMore {
 		if err := cursor.NextPage(&orders); err != nil {
@@ -72,7 +72,7 @@ func TestCancelOrder(t *testing.T) {
 
 		for _, o := range orders {
 			if err := testReadWriteClient().CancelOrder(context.Background(), o.ID); err != nil {
-				if err.Error() != "Order already done" {
+				if err.Error() != "OrderRequest already done" {
 					t.Error(err)
 				}
 			}
@@ -83,9 +83,9 @@ func TestCancelOrder(t *testing.T) {
 func TestGetOrder(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	order := Order{
-		Price:     requireDecimalFromString("1.00"),
-		Size:      requireDecimalFromString("1.00"),
+	order := OrderRequest{
+		Price:     RequireDecimalFromString("1.00"),
+		Size:      RequireDecimalFromString("1.00"),
 		Side:      "buy",
 		ProductId: "BTC-USD",
 	}
@@ -101,13 +101,13 @@ func TestGetOrder(t *testing.T) {
 	}
 
 	if getOrder.ID != savedOrder.ID {
-		t.Error(errors.New("Order ids do not match"))
+		t.Error(errors.New("OrderRequest ids do not match"))
 	}
 }
 
 func TestListOrders(t *testing.T) {
 	cursor := testReadOnlyClient().ListOrders(context.Background())
-	var orders []Order
+	var orders []OrderRequest
 
 	for cursor.HasMore {
 		if err := cursor.NextPage(&orders); err != nil {
@@ -139,7 +139,7 @@ func TestCancelAllOrders(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
 	for _, pair := range []string{"BTC-USD", "ETH-USD", "LTC-USD"} {
-		order := Order{Price: requireDecimalFromString("1.00"), Size: requireDecimalFromString("10000.00"), Side: "buy", ProductId: pair}
+		order := OrderRequest{Price: RequireDecimalFromString("1.00"), Size: RequireDecimalFromString("10000.00"), Side: "buy", ProductId: pair}
 
 		if _, err := testReadWriteClient().CreateOrder(context.Background(), &order); err != nil {
 			t.Error(err)
