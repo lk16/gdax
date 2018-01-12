@@ -49,8 +49,8 @@ type LimitOrderResponse struct {
 }
 
 func (c *Client) CreateLimitOrder(ctx context.Context, newOrder *LimitOrderRequest) (LimitOrderResponse, error) {
+	newOrder.Type = "limit"
 	var response LimitOrderResponse
-
 	url := fmt.Sprintf("/orders")
 	_, err := c.request(ctx, true, "POST", url, newOrder, &response)
 	return response, err
