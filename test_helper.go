@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"time"
+	"github.com/shopspring/decimal"
 )
 
 var sharedTestPublicClient *Client
@@ -76,18 +77,41 @@ func structHasZeroValues(i interface{}) bool {
 	return false
 }
 
-func compareFields(a, b interface{}, properties []string) error {
-	aValueOf := reflect.ValueOf(a)
-	bValueOf := reflect.ValueOf(b)
+func compareAllFields(expected, actual interface{}) error {
+	v := reflect.ValueOf(expected)
+	vType := v.Type()
+	fields := make([]string, 0, 10)
+	for i := 0; i < v.Type().NumField(); i++ {
+		fields = append(fields, vType.Field(i).Name)
+	}
+	return compareFields(expected, actual, fields)
+}
+
+func compareFields(expected, actual interface{}, properties []string) error {
+	expectedValueOf := reflect.ValueOf(expected)
+	actualValueOf := reflect.ValueOf(actual)
 
 	for _, field := range properties {
-		aValue := reflect.Indirect(aValueOf).FieldByName(field).Interface()
-		bValue := reflect.Indirect(bValueOf).FieldByName(field).Interface()
+		expectedValue := reflect.Indirect(expectedValueOf).FieldByName(field).Interface()
+		actualValue := reflect.Indirect(actualValueOf).FieldByName(field).Interface()
 
-		if aValue != bValue {
-			return errors.New(fmt.Sprintf("for field %s: (%s) not equal to (%s)", field, aValue, bValue))
+		expectedDecimal, expectedIsDecimal := expectedValue.(decimal.Decimal)
+		actualDecimal, actualIsDecimal := actualValue.(decimal.Decimal)
+		if expectedIsDecimal && actualIsDecimal {
+			expectedValue, actualValue = expectedDecimal.String(), actualDecimal.String()
+		}
+
+		if expectedValue != actualValue {
+			return errors.New(fmt.Sprintf("for field %s: (%s) not equal to (%s)", field, expectedValue, actualValue))
 		}
 	}
 
 	return nil
+}
+
+func timeMust(time time.Time, err error) time.Time {
+	if err != nil {
+		panic(err)
+	}
+	return time
 }

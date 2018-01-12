@@ -18,8 +18,8 @@ const (
 type Side string
 
 const (
-	SideBuy  Side = "buy"
-	SideSell Side = "sell"
+	Buy  Side = "buy"
+	Sell Side = "sell"
 )
 
 type SelfTradePrevention string
