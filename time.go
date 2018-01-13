@@ -13,9 +13,6 @@ type ServerTime struct {
 }
 
 // GetTime gets the API server time.
-//
-// Example:
-//
 func (c *Client) GetTime(ctx context.Context) (ServerTime, error) {
 	var serverTime ServerTime
 
@@ -28,6 +25,7 @@ var timeLayouts = []string{
 	"2006-01-02 15:04:05+00",
 	"2006-01-02T15:04:05.999999Z",
 
+	"2006-01-02T15:04:05.999",
 	"2006-01-02 15:04:05.999999",
 	"2006-01-02T15:04:05Z",
 	"2006-01-02 15:04:05.999999+00",

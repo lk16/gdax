@@ -18,11 +18,11 @@ type LimitOrderRequest struct {
 	Size      decimal.Decimal `json:"size,string"`
 
 	// Optional
-	ClientOID string    `json:"client_oid,omitempty"`
-	SelfTradePrevention `json:"stp,omitempty"`
-	TimeInForce         `json:"time_in_force,omitempty"`
-	CancelAfter         `json:"cancel_after,omitempty"`
-	PostOnly  *bool     `json:"post_only,omitempty"`
+	ClientOID *uuid.UUID `json:"client_oid,omitempty"`
+	SelfTradePrevention  `json:"stp,omitempty"`
+	TimeInForce          `json:"time_in_force,omitempty"`
+	CancelAfter          `json:"cancel_after,omitempty"`
+	PostOnly  *bool      `json:"post_only,omitempty"`
 }
 
 type LimitOrderResponse struct {
@@ -30,13 +30,12 @@ type LimitOrderResponse struct {
 	Size      decimal.Decimal `json:"size,string,omitempty"`
 	Side                      `json:"side"`
 	ProductId string          `json:"product_id"`
-	ClientOID string          `json:"client_oid,omitempty"`
 	SelfTradePrevention       `json:"stp,omitempty"`
 
-	Price       decimal.Decimal `json:"price,string,omitempty"`
-	TimeInForce                 `json:"time_in_force,omitempty"`
-	CancelAfter CancelAfter     `json:"cancel_after,omitempty"`
-	PostOnly    bool            `json:"post_only"`
+	Price      decimal.Decimal `json:"price,string,omitempty"`
+	TimeInForce                `json:"time_in_force,omitempty"`
+	ExpireTime *Time           `json:"expire_time,string,omitempty"`
+	PostOnly   bool            `json:"post_only"`
 
 	ID            uuid.UUID       `json:"id,omitempty"`
 	Status        OrderStatus     `json:"status,omitempty"`

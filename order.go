@@ -5,6 +5,7 @@ import (
 	"fmt"
 	//"github.com/google/uuid"
 	"github.com/shopspring/decimal"
+	"github.com/google/uuid"
 )
 
 type OrderType string
@@ -88,8 +89,8 @@ type OrderResponse struct {
 	// Market OrderRequest
 	Funds decimal.Decimal `json:"funds,omitempty"`
 	// Response Fields
-	ID             string          `json:"id,omitempty"`
-	Status         string          `json:"status,omitempty"`
+	ID             uuid.UUID       `json:"id,omitempty"`
+	Status         OrderStatus     `json:"status,omitempty"`
 	Settled        bool            `json:"settled,omitempty"`
 	DoneReason     string          `json:"done_reason,omitempty"`
 	CreatedAt      Time            `json:"created_at,string,omitempty"`
@@ -121,7 +122,7 @@ func (c *Client) CreateOrder(ctx context.Context, newOrder *OrderRequest) (Order
 	return savedOrder, err
 }
 
-func (c *Client) CancelOrder(ctx context.Context, id string) error {
+func (c *Client) CancelOrder(ctx context.Context, id uuid.UUID) error {
 	url := fmt.Sprintf("/orders/%s", id)
 	_, err := c.request(ctx, true, "DELETE", url, nil, nil)
 	return err
@@ -139,7 +140,7 @@ func (c *Client) CancelAllOrders(ctx context.Context, p ...CancelAllOrdersParams
 	return orderIDs, err
 }
 
-func (c *Client) GetOrder(ctx context.Context, id string) (OrderResponse, error) {
+func (c *Client) GetOrder(ctx context.Context, id uuid.UUID) (OrderResponse, error) {
 	var savedOrder OrderResponse
 
 	url := fmt.Sprintf("/orders/%s", id)

@@ -16,8 +16,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-	//"io/ioutil"
-	//"log"
 )
 
 type Client struct {

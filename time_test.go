@@ -19,20 +19,28 @@ func TestGetTime(t *testing.T) {
 }
 
 func TestTimeUnmarshalJSON(t *testing.T) {
-	c := Time{}
-	now := time.Now()
 
-	jsonData, err := json.Marshal(now.Format("2006-01-02 15:04:05+00"))
-	if err != nil {
-		t.Error(err)
+	cases := []struct {
+		input    string
+		expected time.Time
+	}{
+		{
+			input:"2018-01-13T17:20:10.601",
+			expected:time.Date(2018, 1, 13, 17, 20, 10, 601000000, time.UTC),
+		},
+		{
+			input:"2006-01-02 15:04:05+00",
+			expected:time.Date(2006, 1, 2, 15, 4, 5, 0, time.UTC),
+		},
 	}
 
-	if err = c.UnmarshalJSON(jsonData); err != nil {
-		t.Error(err)
-	}
-
-	if now.Equal(c.Time()) {
-		t.Errorf("unmarshaled time (%s) does not equal original time (%s)", now, c.Time())
+	for _, testCase := range cases {
+		var c Time
+		if err := c.UnmarshalJSON([]byte(testCase.input)); err != nil {
+			t.Error(err)
+		} else if !testCase.expected.Equal(c.Time()) {
+			t.Errorf("unmarshaled time (%s) does not equal expected time (%s)", c.Time(), testCase.expected)
+		}
 	}
 }
 

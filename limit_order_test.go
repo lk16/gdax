@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"context"
 	"github.com/google/uuid"
+	"time"
 )
 
 var limitOrderMarshalCases = []struct {
@@ -26,13 +27,13 @@ var limitOrderMarshalCases = []struct {
 			ProductId:           "BTC-USD",
 			Price:               RequireDecimalFromString("1"),
 			Size:                RequireDecimalFromString("2"),
-			ClientOID:           "custom-oid",
+			ClientOID:           IDRef(uuid.Must(uuid.Parse("c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5"))),
 			SelfTradePrevention: DecrementAndCancel,
 			TimeInForce:         GoodTillTime,
 			CancelAfter:         CancelAfterHour,
 			PostOnly:            True(),
 		},
-		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"custom-oid","stp":"dc","time_in_force":"GTT","cancel_after":"hour","post_only":true}`,
+		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5","stp":"dc","time_in_force":"GTT","cancel_after":"hour","post_only":true}`,
 	},
 	{
 		input: LimitOrderRequest{
@@ -40,11 +41,11 @@ var limitOrderMarshalCases = []struct {
 			ProductId:           "BTC-USD",
 			Price:               RequireDecimalFromString("1"),
 			Size:                RequireDecimalFromString("2"),
-			ClientOID:           "custom-oid",
+			ClientOID:           IDRef(uuid.Must(uuid.Parse("c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5"))),
 			SelfTradePrevention: CancelBoth,
 			PostOnly:            False(),
 		},
-		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"custom-oid","stp":"cb","post_only":false}`,
+		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5","stp":"cb","post_only":false}`,
 	},
 }
 
@@ -103,6 +104,10 @@ func TestLimitOrderResponse_UnmarshalJSON(t *testing.T) {
 	}
 }
 
+var limitOrderTestCompareFields = []string{
+	"Type", "Side", "ProductId", "Price", "Size",
+}
+
 func TestCreateLimitOrder_Minimal(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
@@ -124,7 +129,49 @@ func TestCreateLimitOrder_Minimal(t *testing.T) {
 		t.Error("order id missing, something was probably incorrect")
 	}
 
-	if err = compareFields(orderRequest, orderResponse, []string{"Side", "ProductId"}); err != nil {
+	if err = compareFields(orderRequest, orderResponse, limitOrderTestCompareFields); err != nil {
 		t.Error(err)
+	}
+
+	if orderResponse.ExpireTime != nil {
+		t.Error("was not expecting an expiration time, default TimeInForce should be GoodTilCanceled")
+	}
+}
+
+func TestCreateLimitOrder_GoodTillTime(t *testing.T) {
+	t.Skip("gdax sandbox is down")
+
+	defer testReadWriteClient().CancelAllOrders(context.Background())
+
+	orderRequest := LimitOrderRequest{
+		Side:        Buy,
+		ProductId:   "BTC-USD",
+		Price:       RequireDecimalFromString("1.00"),
+		Size:        RequireDecimalFromString("2.00"),
+		TimeInForce: GoodTillTime,
+		CancelAfter: CancelAfterMin,
+		PostOnly:    True(),
+		ClientOID:   IDRef(uuid.New()),
+		SelfTradePrevention:CancelBoth,
+	}
+
+	orderResponse, err := testReadWriteClient().CreateLimitOrder(context.Background(), &orderRequest)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if orderResponse.ID == uuid.Nil {
+		t.Error("order id missing, something was probably incorrect")
+	}
+
+	fields := append(limitOrderTestCompareFields, "SelfTradePrevention", "TimeInForce")
+	if err = compareFields(orderRequest, orderResponse, fields); err != nil {
+		t.Error(err)
+	}
+
+	if orderResponse.ExpireTime == nil {
+		t.Error("was expecting an expiration time, we sent TimeInForce GoodTillTime")
+	} else if time.Now().After(orderResponse.ExpireTime.Time()) {
+		t.Error("ExpireTime should have been in the future, indicates a problem")
 	}
 }
