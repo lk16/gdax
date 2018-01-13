@@ -4,6 +4,7 @@ import (
 	"testing"
 	"encoding/json"
 	"context"
+	"github.com/google/uuid"
 )
 
 var stopOrderMarshalCases = []struct {
@@ -15,31 +16,31 @@ var stopOrderMarshalCases = []struct {
 			Side:      Sell,
 			ProductId: "LTC-USD",
 			Price:     RequireDecimalFromString("1"),
-			Size:      RequireDecimalFromString("2"),
+			Size:      DecimalRef(RequireDecimalFromString("2")),
 		},
-		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2"}`,
+		expected: `{"type":"stop","side":"sell","product_id":"LTC-USD","price":"1","size":"2"}`,
 	},
 	{
 		input: StopOrderRequest{
 			Side:                Sell,
 			ProductId:           "LTC-USD",
 			Price:               RequireDecimalFromString("1"),
-			Size:                RequireDecimalFromString("2"),
-			ClientOID:           "custom-oid",
+			Size:                DecimalRef(RequireDecimalFromString("2")),
+			ClientOID:           IDRef(uuid.Must(uuid.Parse("c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5"))),
 			SelfTradePrevention: DecrementAndCancel,
 		},
-		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"custom-oid","stp":"dc","time_in_force":"GTT","cancel_after":"hour","post_only":true}`,
+		expected: `{"type":"stop","side":"sell","product_id":"LTC-USD","price":"1","size":"2","client_oid":"c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5","stp":"dc"}`,
 	},
 	{
 		input: StopOrderRequest{
 			Side:                Sell,
 			ProductId:           "LTC-USD",
 			Price:               RequireDecimalFromString("1"),
-			Size:                RequireDecimalFromString("2"),
-			ClientOID:           "custom-oid",
+			Funds:               DecimalRef(RequireDecimalFromString("2")),
+			ClientOID:           IDRef(uuid.Must(uuid.Parse("c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5"))),
 			SelfTradePrevention: CancelBoth,
 		},
-		expected: `{"type":"limit","side":"buy","product_id":"BTC-USD","price":"1","size":"2","client_oid":"custom-oid","stp":"cb","post_only":false}`,
+		expected: `{"type":"stop","side":"sell","product_id":"LTC-USD","price":"1","funds":"2","client_oid":"c35bb839-ac0a-4ae0-aeee-c3b11a8f20c5","stp":"cb"}`,
 	},
 }
 
@@ -64,7 +65,7 @@ func TestCreateStopOrder_Minimal(t *testing.T) {
 		Side:      Sell,
 		ProductId: "BTC-USD",
 		Price:     RequireDecimalFromString("1.00"),
-		Size:      RequireDecimalFromString("2.00"),
+		Size:      DecimalRef(RequireDecimalFromString("2.00")),
 	}
 
 	orderResponse, err := testReadWriteClient().CreateStopOrder(context.Background(), &orderRequest)

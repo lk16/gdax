@@ -4,6 +4,7 @@ import (
 	"github.com/shopspring/decimal"
 	"fmt"
 	"context"
+	"github.com/google/uuid"
 )
 
 type StopOrderRequest struct {
@@ -14,27 +15,26 @@ type StopOrderRequest struct {
 	Side      Side            `json:"side"`
 	ProductId string          `json:"product_id"`
 	Price     decimal.Decimal `json:"price,string"`
-	Size      decimal.Decimal `json:"size,string"`
-	Funds      decimal.Decimal `json:"funds,string"`
+
+	// Pick Size Or Funds
+	Size  *decimal.Decimal `json:"size,string,omitempty"`
+	Funds *decimal.Decimal `json:"funds,string,omitempty"`
 
 	// Optional
-	ClientOID string    `json:"client_oid,omitempty"`
-	SelfTradePrevention `json:"stp,omitempty"`
+	ClientOID *uuid.UUID `json:"client_oid,omitempty"`
+	SelfTradePrevention  `json:"stp,omitempty"`
 }
-
 
 type StopOrderResponse struct {
 	Type      OrderType       `json:"type"`
-	Size      decimal.Decimal `json:"size,string,omitempty"`
 	Side                      `json:"side"`
 	ProductId string          `json:"product_id"`
-	ClientOID string          `json:"client_oid,omitempty"`
+	Price     decimal.Decimal `json:"price,string"`
+	Size      *decimal.Decimal `json:"size,string,omitempty"`
+	Funds     *decimal.Decimal `json:"funds,string,omitempty"`
 	SelfTradePrevention       `json:"stp,omitempty"`
 
-	Price       decimal.Decimal `json:"price,string,omitempty"`
-	TimeInForce                 `json:"time_in_force,omitempty"`
-	CancelAfter CancelAfter     `json:"cancel_after,omitempty"`
-	PostOnly    bool            `json:"post_only"`
+	PostOnly    bool        `json:"post_only"`
 
 	ID            string          `json:"id,omitempty"`
 	Status        string          `json:"status,omitempty"`

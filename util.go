@@ -13,16 +13,22 @@ func RequireDecimalFromString(s string) decimal.Decimal {
 	return dec
 }
 
-func True() *bool {
-	b := true
+func BoolRef(b bool) *bool {
 	return &b
 }
 
+func True() *bool {
+	return BoolRef(true)
+}
+
 func False() *bool {
-	b := false
-	return &b
+	return BoolRef(false)
 }
 
 func IDRef(id uuid.UUID) *uuid.UUID {
 	return &id;
+}
+
+func DecimalRef(d decimal.Decimal) *decimal.Decimal {
+	return &d
 }

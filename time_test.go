@@ -19,7 +19,6 @@ func TestGetTime(t *testing.T) {
 }
 
 func TestTimeUnmarshalJSON(t *testing.T) {
-
 	cases := []struct {
 		input    string
 		expected time.Time
@@ -34,12 +33,12 @@ func TestTimeUnmarshalJSON(t *testing.T) {
 		},
 	}
 
-	for _, testCase := range cases {
-		var c Time
-		if err := c.UnmarshalJSON([]byte(testCase.input)); err != nil {
+	for _, c := range cases {
+		var actual Time
+		if err := actual.UnmarshalJSON([]byte(c.input)); err != nil {
 			t.Error(err)
-		} else if !testCase.expected.Equal(c.Time()) {
-			t.Errorf("unmarshaled time (%s) does not equal expected time (%s)", c.Time(), testCase.expected)
+		} else if !c.expected.Equal(actual.Time()) {
+			t.Errorf("unmarshaled time (%s) does not equal expected time (%s)", actual.Time(), c.expected)
 		}
 	}
 }

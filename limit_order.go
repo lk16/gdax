@@ -27,24 +27,23 @@ type LimitOrderRequest struct {
 
 type LimitOrderResponse struct {
 	Type      OrderType       `json:"type"`
-	Size      decimal.Decimal `json:"size,string,omitempty"`
+	Size      decimal.Decimal `json:"size,string"`
 	Side                      `json:"side"`
 	ProductId string          `json:"product_id"`
 	SelfTradePrevention       `json:"stp,omitempty"`
 
-	Price      decimal.Decimal `json:"price,string,omitempty"`
-	TimeInForce                `json:"time_in_force,omitempty"`
+	Price      decimal.Decimal `json:"price,string"`
+	TimeInForce                `json:"time_in_force"`
 	ExpireTime *Time           `json:"expire_time,string,omitempty"`
 	PostOnly   bool            `json:"post_only"`
 
-	ID            uuid.UUID       `json:"id,omitempty"`
-	Status        OrderStatus     `json:"status,omitempty"`
+	ID            uuid.UUID       `json:"id"`
+	Status        OrderStatus     `json:"status"`
 	Settled       bool            `json:"settled"`
-	DoneReason    string          `json:"done_reason,omitempty"`
-	CreatedAt     Time            `json:"created_at,string,omitempty"`
-	FillFees      decimal.Decimal `json:"fill_fees,string,omitempty"`
-	FilledSize    decimal.Decimal `json:"filled_size,string,omitempty"`
-	ExecutedValue decimal.Decimal `json:"executed_value,string,omitempty"`
+	CreatedAt     Time            `json:"created_at,string"`
+	FillFees      decimal.Decimal `json:"fill_fees,string"`
+	FilledSize    decimal.Decimal `json:"filled_size,string"`
+	ExecutedValue decimal.Decimal `json:"executed_value,string"`
 }
 
 func (c *Client) CreateLimitOrder(ctx context.Context, newOrder *LimitOrderRequest) (LimitOrderResponse, error) {
