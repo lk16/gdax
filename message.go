@@ -31,6 +31,16 @@ type Message struct {
 	BestBid       decimal.Decimal     `json:"best_bid,string"`
 	BestAsk       decimal.Decimal     `json:"best_ask,string"`
 	Channels      []MessageChannel    `json:"channels"`
+
+	// For User channel
+	UserId    string `json:"user_id,omitempty"`
+	ProfileId string `json:"profile_id,omitempty"`
+
+	// Authentication
+	Signature  string `json:"signature,omitempty"`
+	Key        string `json:"key,omitempty"`
+	Passphrase string `json:"passphrase,omitempty"`
+	Timestamp  string `json:"timestamp,omitempty"`
 }
 
 type MessageChannel struct {

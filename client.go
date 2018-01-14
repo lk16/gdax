@@ -32,6 +32,13 @@ type Client struct {
 	publicLimiter  *rate.Limiter
 }
 
+type FeedAuthHeaders struct {
+	Signature  string
+	Key        string
+	Passphrase string
+	Timestamp  string
+}
+
 // NewClient creates a client for the public endpoint and optionally the private endpoints if a non-nil valid Authentication is passed.
 // Requests to the public endpoint are rate limited to 3 requests per second.
 // Requests to the private endpoint are rate limited to 5 requests per second.
@@ -96,8 +103,7 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	req.Header.Add("User-Agent", "github.com/randy/gdax 0.0.1")
 
 	if c.Authentication != nil {
-		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-		h, err := c.Authentication.Headers(method, url, timestamp, string(data))
+		h, err := c.Authentication.RequestHeaders(method, url, string(data))
 		if err != nil {
 			return res, err
 		}
@@ -150,7 +156,9 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 }
 
 // Headers generates a map that can be used as headers to authenticate a request
-func (a *Authentication) Headers(method, url, timestamp, data string) (map[string]string, error) {
+func (a *Authentication) RequestHeaders(method, url, data string) (map[string]string, error) {
+	timestamp := strconv.FormatInt(time.Now().Unix(), 10)
+
 	h := make(map[string]string)
 	h["CB-ACCESS-KEY"] = a.Key
 	h["CB-ACCESS-PASSPHRASE"] = a.Passphrase
@@ -170,6 +178,16 @@ func (a *Authentication) Headers(method, url, timestamp, data string) (map[strin
 	}
 	h["CB-ACCESS-SIGN"] = sig
 	return h, nil
+}
+
+func (a *Authentication) NewFeedAuthHeaders() (h FeedAuthHeaders, err error) {
+	authHeaders, err := a.RequestHeaders("GET", "/users/self/verify", "")
+
+	h.Signature = authHeaders["CB-ACCESS-SIGN"]
+	h.Key = authHeaders["CB-ACCESS-KEY"]
+	h.Passphrase = authHeaders["CB-ACCESS-PASSPHRASE"]
+	h.Timestamp = authHeaders["CB-ACCESS-TIMESTAMP"]
+	return h, err
 }
 
 func (a *Authentication) generateSig(message, secret string) (string, error) {
