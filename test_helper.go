@@ -95,6 +95,16 @@ func compareFields(expected, actual interface{}, properties []string) error {
 		expectedValue := reflect.Indirect(expectedValueOf).FieldByName(field).Interface()
 		actualValue := reflect.Indirect(actualValueOf).FieldByName(field).Interface()
 
+		expectedDecimalRef, expectedIsDecimalRef := expectedValue.(*decimal.Decimal)
+		if expectedIsDecimalRef && expectedDecimalRef != nil {
+			expectedValue = *expectedDecimalRef
+		}
+
+		actualDecimalRef, actualIsDecimalRef := actualValue.(*decimal.Decimal)
+		if actualIsDecimalRef && actualDecimalRef != nil {
+			actualValue = *actualDecimalRef
+		}
+
 		expectedDecimal, expectedIsDecimal := expectedValue.(decimal.Decimal)
 		actualDecimal, actualIsDecimal := actualValue.(decimal.Decimal)
 		if expectedIsDecimal && actualIsDecimal {

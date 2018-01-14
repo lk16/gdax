@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"context"
 	"github.com/google/uuid"
+	"errors"
 )
 
 type StopOrderRequest struct {
@@ -30,16 +31,15 @@ type StopOrderResponse struct {
 	Side                      `json:"side"`
 	ProductId string          `json:"product_id"`
 	Price     decimal.Decimal `json:"price,string"`
-	Size      *decimal.Decimal `json:"size,string,omitempty"`
-	Funds     *decimal.Decimal `json:"funds,string,omitempty"`
 	SelfTradePrevention       `json:"stp,omitempty"`
 
-	PostOnly    bool        `json:"post_only"`
+	Size     *decimal.Decimal `json:"size,string,omitempty"`
+	Funds    *decimal.Decimal `json:"funds,string,omitempty"`
+	PostOnly bool             `json:"post_only"`
 
-	ID            string          `json:"id,omitempty"`
-	Status        string          `json:"status,omitempty"`
+	ID            uuid.UUID       `json:"id"`
+	Status        OrderStatus     `json:"status,omitempty"`
 	Settled       bool            `json:"settled"`
-	DoneReason    string          `json:"done_reason,omitempty"`
 	CreatedAt     Time            `json:"created_at,string,omitempty"`
 	FillFees      decimal.Decimal `json:"fill_fees,string,omitempty"`
 	FilledSize    decimal.Decimal `json:"filled_size,string,omitempty"`
@@ -47,8 +47,16 @@ type StopOrderResponse struct {
 }
 
 func (c *Client) CreateStopOrder(ctx context.Context, newOrder *StopOrderRequest) (StopOrderResponse, error) {
-	newOrder.Type = "stop"
 	var response StopOrderResponse
+	newOrder.Type = "stop"
+
+	// To prevent confusion.
+	if newOrder.Side == Sell && newOrder.Funds != nil && newOrder.Funds.GreaterThan(decimal.Zero) {
+		return response, errors.New("sell-stop orders (stop-loss) should specify Size and not Funds")
+	} else if newOrder.Side == Buy && newOrder.Size != nil && newOrder.Size.GreaterThan(decimal.Zero) {
+		return response, errors.New("buy-stop orders should specify Funds and not Size")
+	}
+
 	url := fmt.Sprintf("/orders")
 	_, err := c.request(ctx, true, "POST", url, newOrder, &response)
 	return response, err

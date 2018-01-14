@@ -110,8 +110,6 @@ var limitOrderTestCompareFields = []string{
 func TestCreateLimitOrder_Minimal(t *testing.T) {
 	t.Skip("gdax sandbox is down")
 
-	defer testReadWriteClient().CancelAllOrders(context.Background())
-
 	orderRequest := LimitOrderRequest{
 		Side:      Buy,
 		ProductId: "BTC-USD",
@@ -126,6 +124,8 @@ func TestCreateLimitOrder_Minimal(t *testing.T) {
 
 	if orderResponse.ID == uuid.Nil {
 		t.Error("order id missing, something was probably incorrect")
+	} else {
+		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
 	}
 
 	if err = compareFields(orderRequest, orderResponse, limitOrderTestCompareFields); err != nil {
@@ -139,8 +139,6 @@ func TestCreateLimitOrder_Minimal(t *testing.T) {
 
 func TestCreateLimitOrder_GoodTillTime(t *testing.T) {
 	t.Skip("gdax sandbox is down")
-
-	defer testReadWriteClient().CancelAllOrders(context.Background())
 
 	orderRequest := LimitOrderRequest{
 		Side:                Buy,
@@ -161,9 +159,11 @@ func TestCreateLimitOrder_GoodTillTime(t *testing.T) {
 
 	if orderResponse.ID == uuid.Nil {
 		t.Error("order id missing, something was probably incorrect")
+	} else {
+		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
 	}
 
-	fields := append(limitOrderTestCompareFields, "SelfTradePrevention", "TimeInForce")
+	fields := append(limitOrderTestCompareFields[:], "SelfTradePrevention", "TimeInForce")
 	if err = compareFields(orderRequest, orderResponse, fields); err != nil {
 		t.Error(err)
 	}
