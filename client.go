@@ -18,49 +18,21 @@ import (
 	"time"
 )
 
+type Authentication struct {
+	Secret     string
+	Key        string
+	Passphrase string
+}
+
 type Client struct {
+	HttpClient     *http.Client
 	BaseURL        string
-	secret         string
-	key            string
-	passphrase     string
-	hasCredentials bool
+	Authentication *Authentication
 	privateLimiter *rate.Limiter
 	publicLimiter  *rate.Limiter
-	httpClient     *http.Client
 }
 
-// NewPublicClient creates a client for the public restful endpoint only.
-// Calling any methods that use the private restful endpoint will return errors.
-// Requests to the public endpoint are rate limited to 3 requests per second.
-//
-// Example:
-// import (
-//   "context"
-//   "github.com/randyp/gdax"
-//   "net/http"
-//  )
-//
-// client := NewPublicClient(&http.Client{
-//   Timeout: 15 * time.Second,
-// })
-// currencies := client.GetCurrencies(context.Background())
-// // do something with the currencies
-func NewPublicClient(httpClient *http.Client) *Client {
-	client := Client{
-		BaseURL:        "https://api.gdax.com",
-		secret:         "",
-		key:            "",
-		passphrase:     "",
-		hasCredentials: false,
-		privateLimiter: rate.NewLimiter(rate.Every(200*time.Millisecond), 1),
-		publicLimiter:  rate.NewLimiter(rate.Every(333*time.Millisecond), 1),
-		httpClient:     httpClient,
-	}
-
-	return &client
-}
-
-// NewClient creates a client for the public and private restful endpoints.
+// NewClient creates a client for the public endpoint and optionally the private endpoints if a non-nil valid Authentication is passed.
 // Requests to the public endpoint are rate limited to 3 requests per second.
 // Requests to the private endpoint are rate limited to 5 requests per second.
 //
@@ -76,29 +48,28 @@ func NewPublicClient(httpClient *http.Client) *Client {
 // 	 &http.Client{
 //     Timeout: 15 * time.Second,
 //   },
-//   os.Getenv("COINBASE_SECRET"),
-//   os.Getenv("COINBASE_KEY"),
-//   os.Getenv("COINBASE_PASSPHRASE"),
+//   &gdax.Authentication{
+//     Secret: os.Getenv("COINBASE_SECRET"),
+//     Key: os.Getenv("COINBASE_KEY"),
+//     Passphrase: os.Getenv("COINBASE_PASSPHRASE"),
+//	 }
 // )
 // accounts := client.GetAccounts(context.Background())
 // // do something with the accounts
-func NewClient(httpClient *http.Client, secret, key, passphrase string) *Client {
+func NewClient(httpClient *http.Client, authentication *Authentication) *Client {
 	client := Client{
 		BaseURL:        "https://api.gdax.com",
-		secret:         secret,
-		key:            key,
-		passphrase:     passphrase,
-		hasCredentials: true,
+		Authentication: authentication,
 		privateLimiter: rate.NewLimiter(rate.Every(200*time.Millisecond), 1),
 		publicLimiter:  rate.NewLimiter(rate.Every(333*time.Millisecond), 1),
-		httpClient:     httpClient,
+		HttpClient:     httpClient,
 	}
 
 	return &client
 }
 
 func (c *Client) request(ctx context.Context, private bool, method string, url string, params, result interface{}) (res *http.Response, err error) {
-	if private && !c.hasCredentials {
+	if private && c.Authentication == nil {
 		return res, errors.New("cannot use a public client to make requests to the private api")
 	}
 
@@ -124,9 +95,9 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("User-Agent", "github.com/randy/gdax 0.0.1")
 
-	if c.hasCredentials {
+	if c.Authentication != nil {
 		timestamp := strconv.FormatInt(time.Now().Unix(), 10)
-		h, err := c.Headers(method, url, timestamp, string(data))
+		h, err := c.Authentication.Headers(method, url, timestamp, string(data))
 		if err != nil {
 			return res, err
 		}
@@ -141,7 +112,7 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 		c.publicLimiter.Wait(ctx)
 	}
 
-	res, err = c.httpClient.Do(req)
+	res, err = c.HttpClient.Do(req)
 	if err != nil {
 		return res, err
 	}
@@ -179,10 +150,10 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 }
 
 // Headers generates a map that can be used as headers to authenticate a request
-func (c *Client) Headers(method, url, timestamp, data string) (map[string]string, error) {
+func (a *Authentication) Headers(method, url, timestamp, data string) (map[string]string, error) {
 	h := make(map[string]string)
-	h["CB-ACCESS-KEY"] = c.key
-	h["CB-ACCESS-PASSPHRASE"] = c.passphrase
+	h["CB-ACCESS-KEY"] = a.Key
+	h["CB-ACCESS-PASSPHRASE"] = a.Passphrase
 	h["CB-ACCESS-TIMESTAMP"] = timestamp
 
 	message := fmt.Sprintf(
@@ -193,7 +164,7 @@ func (c *Client) Headers(method, url, timestamp, data string) (map[string]string
 		data,
 	)
 
-	sig, err := c.generateSig(message, c.secret)
+	sig, err := a.generateSig(message, a.Secret)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +172,7 @@ func (c *Client) Headers(method, url, timestamp, data string) (map[string]string
 	return h, nil
 }
 
-func (c *Client) generateSig(message, secret string) (string, error) {
+func (a *Authentication) generateSig(message, secret string) (string, error) {
 	key, err := base64.StdEncoding.DecodeString(secret)
 	if err != nil {
 		return "", err

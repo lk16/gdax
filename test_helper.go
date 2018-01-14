@@ -13,26 +13,23 @@ import (
 var sharedTestPublicClient *Client
 
 func initTestClients() {
-	sharedTestPublicClient = NewPublicClient(
-		&http.Client{
-			Timeout: 15 * time.Second,
-		},
-	)
-	sharedTestReadOnlyClient = NewClient(
-		sharedTestPublicClient.httpClient,
-		os.Getenv("COINBASE_SECRET_RO"),
-		os.Getenv("COINBASE_KEY_RO"),
-		os.Getenv("COINBASE_PASSPHRASE_RO"),
-	)
+	sharedTestPublicClient = NewClient(&http.Client{Timeout: 15 * time.Second,}, nil)
+
+	roAuth := Authentication{
+		Secret:     os.Getenv("COINBASE_SECRET_RO"),
+		Key:        os.Getenv("COINBASE_KEY_RO"),
+		Passphrase: os.Getenv("COINBASE_PASSPHRASE_RO"),
+	}
+	sharedTestReadOnlyClient = NewClient(sharedTestPublicClient.HttpClient, &roAuth)
 	sharedTestReadOnlyClient.publicLimiter = sharedTestPublicClient.publicLimiter
 	sharedTestReadOnlyClient.privateLimiter = sharedTestPublicClient.privateLimiter
 
-	sharedTestReadWriteClient = NewClient(
-		sharedTestPublicClient.httpClient,
-		os.Getenv("COINBASE_SECRET"),
-		os.Getenv("COINBASE_KEY"),
-		os.Getenv("COINBASE_PASSPHRASE"),
-	)
+	rwAuth := Authentication{
+		Secret:     os.Getenv("COINBASE_SECRET"),
+		Key:        os.Getenv("COINBASE_KEY"),
+		Passphrase: os.Getenv("COINBASE_PASSPHRASE"),
+	}
+	sharedTestReadWriteClient = NewClient(sharedTestPublicClient.HttpClient, &rwAuth)
 	sharedTestReadWriteClient.publicLimiter = sharedTestPublicClient.publicLimiter
 	sharedTestReadWriteClient.privateLimiter = sharedTestPublicClient.privateLimiter
 }
