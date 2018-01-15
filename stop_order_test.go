@@ -116,7 +116,7 @@ func TestCreateStopOrder_MinimalSell(t *testing.T) {
 		t.Error(err)
 	}
 
-	if orderResponse.ID == uuid.Nil {
+	if orderResponse.ID.String() == uuid.Nil.String() {
 		t.Error("order id missing, something was probably incorrect")
 	} else {
 		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
@@ -153,7 +153,7 @@ func TestCreateStopOrder_MinimalBuy(t *testing.T) {
 		t.Error(err)
 	}
 
-	if orderResponse.ID == uuid.Nil {
+	if orderResponse.ID.String() == uuid.Nil.String() {
 		t.Error("order id missing, something was probably incorrect")
 	} else {
 		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
@@ -193,7 +193,7 @@ func TestCreateStopOrder_Sell(t *testing.T) {
 		t.Error(err)
 	}
 
-	if orderResponse.ID == uuid.Nil {
+	if orderResponse.ID.String() == uuid.Nil.String() {
 		t.Error("order id missing, something was probably incorrect")
 	} else {
 		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)

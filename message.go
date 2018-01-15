@@ -1,6 +1,8 @@
 package gdax
 
-import "github.com/shopspring/decimal"
+import (
+	"github.com/shopspring/decimal"
+)
 
 type Message struct {
 	Type          string              `json:"type"`

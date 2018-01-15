@@ -3,9 +3,8 @@ package gdax
 import (
 	"context"
 	"errors"
-	//"github.com/google/uuid"
-	"testing"
 	"github.com/google/uuid"
+	"testing"
 )
 
 func TestCreateLimitOrders(t *testing.T) {
@@ -23,7 +22,7 @@ func TestCreateLimitOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.ID == uuid.Nil {
+	if savedOrder.ID.String() == uuid.Nil.String() {
 		t.Error(errors.New("No create id found"))
 	}
 
@@ -50,7 +49,7 @@ func TestCreateMarketOrders(t *testing.T) {
 		t.Error(err)
 	}
 
-	if savedOrder.ID == uuid.Nil {
+	if savedOrder.ID.String() == uuid.Nil.String() {
 		t.Error(errors.New("No create id found"))
 	}
 

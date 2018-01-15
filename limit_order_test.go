@@ -122,7 +122,7 @@ func TestCreateLimitOrder_Minimal(t *testing.T) {
 		t.Error(err)
 	}
 
-	if orderResponse.ID == uuid.Nil {
+	if orderResponse.ID.String() == uuid.Nil.String() {
 		t.Error("order id missing, something was probably incorrect")
 	} else {
 		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
@@ -157,7 +157,7 @@ func TestCreateLimitOrder_GoodTillTime(t *testing.T) {
 		t.Error(err)
 	}
 
-	if orderResponse.ID == uuid.Nil {
+	if orderResponse.ID.String() == uuid.Nil.String() {
 		t.Error("order id missing, something was probably incorrect")
 	} else {
 		defer testReadWriteClient().CancelOrder(context.Background(), orderResponse.ID)
