@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	//"github.com/google/uuid"
-	"github.com/shopspring/decimal"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type OrderType string
@@ -59,35 +59,35 @@ const (
 )
 
 type OrderRequest struct {
-	Type      OrderType       `json:"type"`
-	Size      decimal.Decimal `json:"size,string,omitempty"`
-	Side                      `json:"side"`
-	ProductId string          `json:"product_id"`
-	ClientOID string          `json:"client_oid,omitempty"`
-	SelfTradePrevention       `json:"stp,omitempty"`
+	Type                OrderType       `json:"type"`
+	Size                decimal.Decimal `json:"size,string,omitempty"`
+	Side                `json:"side"`
+	ProductId           string `json:"product_id"`
+	ClientOID           string `json:"client_oid,omitempty"`
+	SelfTradePrevention `json:"stp,omitempty"`
 	// Limit OrderRequest
 	Price       decimal.Decimal `json:"price,string,omitempty"`
-	TimeInForce                 `json:"time_in_force,omitempty"`
-	CancelAfter CancelAfter     `json:"cancel_after,omitempty"`
-	PostOnly    bool            `json:"post_only,omitempty"`
+	TimeInForce `json:"time_in_force,omitempty"`
+	CancelAfter CancelAfter `json:"cancel_after,omitempty"`
+	PostOnly    bool        `json:"post_only,omitempty"`
 	// Market OrderRequest
 	Funds string `json:"funds,omitempty"`
 }
 
 type OrderResponse struct {
-	Type      OrderType       `json:"type"`
-	Size      decimal.Decimal `json:"size,string,omitempty"`
-	Side                      `json:"side"`
-	ProductId string          `json:"product_id"`
-	ClientOID string          `json:"client_oid,omitempty"`
-	SelfTradePrevention       `json:"stp,omitempty"`
+	Type                OrderType       `json:"type"`
+	Size                decimal.Decimal `json:"size,string,omitempty"`
+	Side                `json:"side"`
+	ProductId           string `json:"product_id"`
+	ClientOID           string `json:"client_oid,omitempty"`
+	SelfTradePrevention `json:"stp,omitempty"`
 	// Limit OrderRequest
 	Price       decimal.Decimal `json:"price,string,omitempty"`
-	TimeInForce                 `json:"time_in_force,omitempty"`
-	CancelAfter CancelAfter     `json:"cancel_after,omitempty"`
-	PostOnly    bool            `json:"post_only,omitempty"`
+	TimeInForce `json:"time_in_force,omitempty"`
+	CancelAfter CancelAfter `json:"cancel_after,omitempty"`
+	PostOnly    bool        `json:"post_only,omitempty"`
 	// Market OrderRequest
-	Funds decimal.Decimal `json:"funds,omitempty"`
+	Funds decimal.Decimal `json:"funds,string,omitempty"`
 	// Response Fields
 	ID             uuid.UUID       `json:"id,omitempty"`
 	Status         OrderStatus     `json:"status,omitempty"`

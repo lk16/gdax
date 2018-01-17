@@ -91,6 +91,7 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 
 		if _, ok := params.(*OrderRequest); ok {
 			var dataObj map[string]interface{}
+
 			json.Unmarshal(data, &dataObj)
 
 			f, err := strconv.ParseFloat(dataObj["size"].(string), 64)
