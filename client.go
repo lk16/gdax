@@ -89,6 +89,23 @@ func (c *Client) request(ctx context.Context, private bool, method string, url s
 			return res, err
 		}
 
+		if _, ok := params.(*OrderRequest); ok {
+			var dataObj map[string]interface{}
+			json.Unmarshal(data, &dataObj)
+
+			f, err := strconv.ParseFloat(dataObj["size"].(string), 64)
+			if err != nil {
+				return res, nil
+			}
+			if f == 0.0 {
+				delete(dataObj, "size")
+			}
+			data, err = json.Marshal(dataObj)
+			if err != nil {
+				return res, nil
+			}
+		}
+
 		body = bytes.NewReader(data)
 	}
 
