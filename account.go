@@ -107,3 +107,19 @@ func (c *Client) ListHolds(ctx context.Context, id uuid.UUID, p ...ListHoldsPara
 		&paginationParams,
 	)
 }
+
+type WithDrawResponse struct {
+	ID       string  `json:"id"`
+	Amount   float64 `json:"amount,string"`
+	Currency string  `json:"currency"`
+}
+
+func (c *Client) Withdraw(ctx context.Context, amount float64, currency string, address string) (WithDrawResponse, error) {
+	withDrawResponse := WithDrawResponse{}
+	params := make(map[string]interface{}, 0)
+	params["amount"] = amount
+	params["currency"] = currency
+	params["crypto_address"] = address
+	_, err := c.request(ctx, true, "POST", "/withdrawals/crypto", params, &withDrawResponse)
+	return withDrawResponse, err
+}
