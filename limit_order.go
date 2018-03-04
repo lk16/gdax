@@ -1,10 +1,10 @@
 package gdax
 
 import (
-	"github.com/shopspring/decimal"
-	"fmt"
 	"context"
+	"fmt"
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 type LimitOrderRequest struct {
@@ -14,28 +14,28 @@ type LimitOrderRequest struct {
 	// Required
 	Side      Side            `json:"side"`
 	ProductId string          `json:"product_id"`
-	Price     decimal.Decimal `json:"price,string"`
+	Price     string          `json:"price"`
 	Size      decimal.Decimal `json:"size,string"`
 
 	// Optional
-	ClientOID *uuid.UUID `json:"client_oid,omitempty"`
-	SelfTradePrevention  `json:"stp,omitempty"`
-	TimeInForce          `json:"time_in_force,omitempty"`
-	CancelAfter          `json:"cancel_after,omitempty"`
-	PostOnly  *bool      `json:"post_only,omitempty"`
+	ClientOID           *uuid.UUID `json:"client_oid,omitempty"`
+	SelfTradePrevention `json:"stp,omitempty"`
+	TimeInForce         `json:"time_in_force,omitempty"`
+	CancelAfter         `json:"cancel_after,omitempty"`
+	PostOnly            *bool `json:"post_only,omitempty"`
 }
 
 type LimitOrderResponse struct {
-	Type      OrderType       `json:"type"`
-	Size      decimal.Decimal `json:"size,string"`
-	Side                      `json:"side"`
-	ProductId string          `json:"product_id"`
-	SelfTradePrevention       `json:"stp,omitempty"`
+	Type                OrderType       `json:"type"`
+	Size                decimal.Decimal `json:"size,string"`
+	Side                `json:"side"`
+	ProductId           string `json:"product_id"`
+	SelfTradePrevention `json:"stp,omitempty"`
 
-	Price      decimal.Decimal `json:"price,string"`
-	TimeInForce                `json:"time_in_force"`
-	ExpireTime *Time           `json:"expire_time,string,omitempty"`
-	PostOnly   bool            `json:"post_only"`
+	Price       decimal.Decimal `json:"price,string"`
+	TimeInForce `json:"time_in_force"`
+	ExpireTime  *Time `json:"expire_time,string,omitempty"`
+	PostOnly    bool  `json:"post_only"`
 
 	ID            uuid.UUID       `json:"id"`
 	Status        OrderStatus     `json:"status"`
