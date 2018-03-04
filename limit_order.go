@@ -12,10 +12,10 @@ type LimitOrderRequest struct {
 	Type OrderType `json:"type"`
 
 	// Required
-	Side      Side            `json:"side"`
-	ProductId string          `json:"product_id"`
-	Price     string          `json:"price"`
-	Size      decimal.Decimal `json:"size,string"`
+	Side      Side   `json:"side"`
+	ProductId string `json:"product_id"`
+	Price     string `json:"price"`
+	Size      string `json:"size"`
 
 	// Optional
 	ClientOID           *uuid.UUID `json:"client_oid,omitempty"`
